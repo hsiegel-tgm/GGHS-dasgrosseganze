@@ -1,0 +1,61 @@
+package model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import org.hibernate.validator.constraints.Email;
+
+/*
+ * 
+ * 2014-05-07 Hannah erstellt
+ * 
+ * 
+ * TODO JUnit
+ * TODO Komment
+ * TODO Design pefekto
+ * TODO GUI Test
+ * TODO Variablen
+ * TODO Coding style
+ * 
+ * 
+ * 
+ * 
+ * */
+//Named Query
+@NamedQueries({
+	@NamedQuery(name="getUsers",query="FROM User"),
+})
+
+@Entity
+public class User {
+	@Id 
+	@GeneratedValue
+	long ID;
+	
+	String username;
+
+	@Email
+	String email;
+	
+	public User(){}
+	
+	public User(String username){
+		this.username=username;
+		this.email="no@email.com";
+	}
+	
+	public User(String username, String email){
+		this.username=username;
+		this.email=email;
+	}
+	
+	public String getUsername(){
+		return this.username;
+	}
+	
+	public String toString(){
+		return "username:"+this.username+" - email:"+this.email;
+	}
+}
