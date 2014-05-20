@@ -50,16 +50,14 @@ public class User {
 		this.username=username;
 		boolean result = true;
 		try {
+			this.email=email;
 			InternetAddress emailAddr = new InternetAddress(email);
 			emailAddr.validate();
 		} catch (AddressException ex) {
 			//TODO Fehler Ausgabe bzw Exceptionhandling von Hannah!
 			this.email="no@email.com";
 		}
-		this.email=email;
 	}
-
-
 
 	public String getUsername(){
 		return this.username;
