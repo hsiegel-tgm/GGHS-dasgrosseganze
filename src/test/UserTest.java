@@ -9,12 +9,13 @@ public class UserTest {
 
 	@Test
 	public void testUser() {
-
+		User u = new User();
 	}
 
 	@Test
 	public void testUserString() {
-	
+		User u = new User("Name");
+		assertEquals("Name",u.getUsername());
 	}
 
 	@Test
@@ -40,13 +41,9 @@ public class UserTest {
 	}
 
 	@Test
-	public void testGetUsername() {
-	
-	}
-
-	@Test
 	public void testToString() {
-	
+	   User u = new User("Name","user@mail.at");
+	   assertEquals("username:Name - email:user@mail.at",u.toString());
 	}
 
 }
