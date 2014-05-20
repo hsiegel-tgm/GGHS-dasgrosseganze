@@ -64,7 +64,9 @@ public class User {
 	public String getUsername(){
 		return this.username;
 	}
-  
+    public String geteMail(){
+    	return this.email;
+    }
 	public String toString(){
 		return "username:"+this.username+" - email:"+this.email;
 	}
