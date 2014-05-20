@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.*;
+import model.User;
 
 import org.junit.Test;
 
@@ -8,27 +9,28 @@ public class UserTest {
 
 	@Test
 	public void testUser() {
-		fail("Not yet implemented");
+
 	}
 
 	@Test
 	public void testUserString() {
-		fail("Not yet implemented");
+	
 	}
 
 	@Test
-	public void testUserStringString() {
-		fail("Not yet implemented");
+	public void testUserStringStringRight1() {
+		User u = new User("Melly","mgoebel@ain.at");
+		assertEquals("mgoebel@ain.at",u.geteMail());		
 	}
 
 	@Test
 	public void testGetUsername() {
-		fail("Not yet implemented");
+	
 	}
 
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+	
 	}
 
 }
