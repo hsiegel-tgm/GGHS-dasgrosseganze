@@ -59,13 +59,16 @@ public class User {
 		}else{
 			this.username="User";
 		}	
-		
+		if(email != null && email != ""){
 		try {
 			this.email=email;
 			InternetAddress emailAddr = new InternetAddress(email);
 			emailAddr.validate();
 		} catch (AddressException ex) {
 			//TODO Fehler Ausgabe bzw Exceptionhandling von Hannah!
+			this.email="no@email.com";
+		}
+		}else{
 			this.email="no@email.com";
 		}
 	}
