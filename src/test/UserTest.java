@@ -6,7 +6,7 @@ import model.User;
 import org.junit.Test;
 /**
  * Junit-Testcases for User
- * @author Melanie Göbel
+ * @author Melanie Goebel
  * @version 2014-05-21
  */
 public class UserTest {
