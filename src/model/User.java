@@ -39,16 +39,27 @@ public class User {
 	@Email
 	String email;
 
-	public User(){}
-
-	public User(String username){
-		this.username=username;
+	public User(){
+		this.username="User";
 		this.email="no@email.com";
 	}
 
-	public User(String username, String email){
+	public User(String username){
+		this.email="no@email.com";
+		if(username != null && username != ""){
 		this.username=username;
-		boolean result = true;
+		}else{
+			this.username ="User";
+		}
+	}
+
+	public User(String username, String email){
+		if(username != null  && username != ""){
+		this.username=username;
+		}else{
+			this.username="User";
+		}	
+		
 		try {
 			this.email=email;
 			InternetAddress emailAddr = new InternetAddress(email);
