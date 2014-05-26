@@ -17,7 +17,7 @@ public class Kommentar {
 	private Long ID;
 	
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	private Event event;
+	private DoodleEvent event;
 	
 	private String text;
 	

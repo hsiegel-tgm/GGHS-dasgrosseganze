@@ -46,10 +46,10 @@ public class Master extends UI {
 		//navigator = new Navigator (this,this);
 		navigator = new FatNavigator(this,this);
 		//addin the Views
-		navigator.addView("",new Myproject2UI(navigator,this));
-		navigator.addView("newuser",new NewUser(navigator,this));
-		navigator.addView("main",new StartPage(navigator,this));
-		navigator.addView("main",new StartPage(navigator,this));
+		navigator.addView(Variables.LOGIN,new Myproject2UI(navigator,this));
+		navigator.addView(Variables.REGISTER,new NewUser(navigator,this));
+		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
+		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
 
 		
 	}

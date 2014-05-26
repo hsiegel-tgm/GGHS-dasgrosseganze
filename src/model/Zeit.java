@@ -20,7 +20,7 @@ public class Zeit {
 	private Date ende;
 	
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	private Event event;
+	private DoodleEvent event;
 
 	public Date getAnfang() {
 		return anfang;
@@ -38,15 +38,15 @@ public class Zeit {
 		this.ende = ende;
 	}
 
-	public Event getEvent() {
+	public DoodleEvent getEvent() {
 		return event;
 	}
 
-	public void setEvent(Event event) {
+	public void setEvent(DoodleEvent event) {
 		this.event = event;
 	}
 
-	public Zeit(Date anfang, Date ende, Event event) {
+	public Zeit(Date anfang, Date ende, DoodleEvent event) {
 		super();
 		this.anfang = anfang;
 		this.ende = ende;

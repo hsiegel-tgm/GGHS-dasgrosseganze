@@ -15,6 +15,6 @@ public class Eingeladen {
 	private User user;
 	
 	@OneToOne(optional=false)
-	private Event event;
+	private DoodleEvent event;
 	
 }
