@@ -33,6 +33,9 @@ import com.vaadin.ui.Button.ClickEvent;
  * 
  * 
  * */
+
+
+
 public class StartPage extends VerticalLayout implements View {
 
 	private  FatNavigator navigator;
@@ -45,16 +48,24 @@ public class StartPage extends VerticalLayout implements View {
 		layout.setMargin(true);
 		
 		Button buttonLogOut = new Button("Log Out");
-		
 		buttonLogOut.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				navigator.navigateTo(Variables.LOGIN);
 			}
 		});
+		Button button_newEvent= new Button("New Event");
+		button_newEvent.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				navigator.navigateTo(Variables.NEWEVENT);
+			}
+		});
 		
 		layout.addComponent(new Label("Doodle - not yet implemented!"));
-		
+		layout.addComponent(button_newEvent);	
+		layout.addComponent(buttonLogOut);	
+
         
 		String s;
 		

@@ -117,7 +117,7 @@ public class NewEvent extends VerticalLayout implements View {
 				
 				//fetching values
 				String name = textfield_eventname.getValue();	
-				String ort = textfield_eventname.getValue();	
+				String ort = textfield_eventort.getValue();	
 
 				User admin = new User(); //TODO id lalal not lik thot
 				
@@ -129,6 +129,8 @@ public class NewEvent extends VerticalLayout implements View {
 				Transaction t = session.beginTransaction();
 				t.begin();
 				//saving user
+				session.save(admin);
+
 				session.save(e);
 				t.commit();
 				session.close();
