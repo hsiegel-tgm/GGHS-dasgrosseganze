@@ -30,8 +30,8 @@ public class InitSession {
 	    	 SessionFactory sessionFactory = new AnnotationConfiguration()
 	         .configure("/hibernate.cfg.xml") // give path to hibernate.cfg.xml (recommended)
 	         .buildSessionFactory();
-
-	         return sessionFactory;
+	    	 
+	    	 return sessionFactory;
 	    	
 	    } catch (Throwable ex) { 
 	      System.err.println("Initial SessionFactory creation failed." + ex);

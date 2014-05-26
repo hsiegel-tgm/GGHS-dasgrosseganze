@@ -31,6 +31,7 @@ import com.vaadin.ui.VerticalLayout;
 
 
 
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,7 +75,6 @@ import org.hibernate.cfg.AnnotationConfiguration;
 @SuppressWarnings("serial")
 @Theme("myproject2")
 public class Myproject2UI extends VerticalLayout implements View {
-	protected static final String SESSION_SCOPED_VALUE_ID = "test";
 	private TextField searchField;
 	private  FatNavigator navigator;
 	private Master master;
@@ -87,30 +87,32 @@ public class Myproject2UI extends VerticalLayout implements View {
 		this.navigator=nav;
 		this.master=m;
 
+		
+		
 		final VerticalLayout layout =this;
 		layout.setMargin(true);
 
 		layout.addComponent(new Label("LOG IN"));
-		Button button = new Button("OK!");
+		Button buttonOK = new Button("OK!");
         searchField = new TextField();
 
 		layout.addComponent(searchField);
-		layout.addComponent(button);
+		layout.addComponent(buttonOK);
 		
 		
-		Button button2 = new Button("Register new User!");
+		Button buttonNewUser = new Button("Register new User!");
 
-		layout.addComponent(button2); 
-		button2.addClickListener(new Button.ClickListener() {
+		layout.addComponent(buttonNewUser); 
+		buttonNewUser.addClickListener(new Button.ClickListener() {
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				navigator.navigateTo("newuser");
 			}
 		});
-		button.addClickListener(new Button.ClickListener() {
+		buttonOK.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				String text = searchField.getValue();
+				String inputUsername = searchField.getValue();
 
 				Session session =  InitSession.getSession().openSession();
 
@@ -120,20 +122,17 @@ public class Myproject2UI extends VerticalLayout implements View {
 				
 				for (int i = 0; i < res.size(); ++i) {
 					User user = (User) res.get(i);
-					if((text.equals(user.getUsername()))&&b){
+					if((inputUsername.equals(user.getUsername()))&&b){
 						//log in successful
 						//call startpage
 						
 						try {
 						    VaadinSession.getCurrent().getLockInstance().lock();
-						    VaadinSession.getCurrent().setAttribute(SESSION_SCOPED_VALUE_ID, "some value123");
+						    VaadinSession.getCurrent().setAttribute(Variables.USERNAME, inputUsername);
 						} finally {
 						    VaadinSession.getCurrent().getLockInstance().unlock();
 						}
 						
-						
-						navigator.setUsername("POPO"); //TODO
-						System.out.println("u:"+navigator.getUsername());
 						navigator.navigateTo("main");
 						b = false;
 					}
@@ -152,6 +151,6 @@ public class Myproject2UI extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		Notification.show("WELCOME");		
+		Notification.show("WELCOME...");		
 	}
 }

@@ -11,8 +11,10 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 
 
 /*
@@ -42,16 +44,23 @@ public class StartPage extends VerticalLayout implements View {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 		
-
+		Button buttonLogOut = new Button("Log Out");
+		
+		buttonLogOut.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				navigator.navigateTo(Variables.LOGIN);
+			}
+		});
+		
 		layout.addComponent(new Label("Doodle - not yet implemented!"));
 		
-		layout.addComponent(new Label("username: " + navigator.getUsername()));
         
 		String s;
 		
 		try {
 		    VaadinSession.getCurrent().getLockInstance().lock();
-		    s = (String) VaadinSession.getCurrent().getAttribute("test");
+		    s = (String) VaadinSession.getCurrent().getAttribute(Variables.USERNAME);
 		} finally {
 		    VaadinSession.getCurrent().getLockInstance().unlock();
 		}

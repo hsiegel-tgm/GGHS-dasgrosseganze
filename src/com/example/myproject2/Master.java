@@ -24,11 +24,12 @@ import com.vaadin.ui.UI;
  * TODO Variablen
  * TODO Coding style
  * */
+
+
 @SuppressWarnings("serial")
 @Theme("myproject2")
 @SessionScoped
 public class Master extends UI {
-	private static final String SESSION_SCOPED_VALUE_ID = null;
 	private FatNavigator navigator;
 	private static String username;
 	
@@ -48,7 +49,8 @@ public class Master extends UI {
 		navigator.addView("",new Myproject2UI(navigator,this));
 		navigator.addView("newuser",new NewUser(navigator,this));
 		navigator.addView("main",new StartPage(navigator,this));
-		
+		navigator.addView("main",new StartPage(navigator,this));
+
 		
 	}
 	

@@ -7,6 +7,9 @@ import model.User;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -19,6 +22,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
+
+
+
 
 
 
@@ -41,8 +48,8 @@ import org.hibernate.Query;
 
 import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
+import javax.validation.metadata.BeanDescriptor;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -96,6 +103,8 @@ public class NewUser extends VerticalLayout implements View {
         textfield_username = new TextField();
 		layout.addComponent(textfield_username);
 
+	
+
 		//email Textfield
 		layout.addComponent(new Label("email:"));
         textfield_email = new TextField();
@@ -110,7 +119,7 @@ public class NewUser extends VerticalLayout implements View {
 		//Back Button Listener
 		button_back.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo("");
+				navigator.navigateTo(Variables.LOGIN);
 			}
 		});
 		
@@ -145,6 +154,9 @@ public class NewUser extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
+	
+
+	
 }
 
 
