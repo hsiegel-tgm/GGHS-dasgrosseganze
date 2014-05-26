@@ -25,7 +25,16 @@
 		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
 		
 		<property name="hibernate.hbm2ddl.auto">update</property>
+
+
 <mapping class="model.User"/>
+<mapping class="model.Event"/>
+<mapping class="model.Eingeladen"/>
+<mapping class="model.Abgestimmt"/>
+<mapping class="model.Notification"/>
+<mapping class="model.Zeit"/>
+<mapping class="model.Kommentar"/>
+
 
 
 
