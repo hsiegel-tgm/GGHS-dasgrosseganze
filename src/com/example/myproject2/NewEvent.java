@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 
 import model.DoodleEvent;
 import model.User;
+import model.Zeit;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -17,13 +18,22 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Field.ValueChangeEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
+
+
+
+
+
 
 
 
@@ -37,7 +47,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.hibernate.Query;
@@ -69,6 +81,8 @@ import org.hibernate.cfg.AnnotationConfiguration;
 public class NewEvent extends VerticalLayout implements View {
 	//Textfields
 	private TextField textfield_eventname,textfield_eventort;
+	private Vector<PopupDateField> dates = new Vector<PopupDateField>();
+	
 	//Navigator and master object
 	private  FatNavigator navigator;
 	private Master master;
@@ -98,6 +112,33 @@ public class NewEvent extends VerticalLayout implements View {
 		layout.addComponent(textfield_eventort);
 
 
+		 dates.add(new PopupDateField());
+	     dates.elementAt(0).setValue(new Date());
+	     dates.elementAt(0).setImmediate(true);
+	     dates.elementAt(0).setTimeZone(TimeZone.getTimeZone("UTC"));
+	     dates.elementAt(0).setLocale(Locale.US);
+	     dates.elementAt(0).setResolution(Resolution.MINUTE);
+		
+	     Button button_plus = new Button("+");
+			button_plus.addClickListener(new Button.ClickListener() {
+				public void buttonClick(ClickEvent event) {
+					 dates.add(new PopupDateField());
+					 dates.lastElement().setValue(new Date());
+					 dates.lastElement().setImmediate(true);
+				     dates.lastElement().setTimeZone(TimeZone.getTimeZone("UTC"));
+				     dates.lastElement().setLocale(Locale.US);
+				     dates.lastElement().setResolution(Resolution.MINUTE);
+				     layout.addComponent(dates.lastElement());
+
+				}
+			});
+	     
+			
+	     
+	     layout.addComponent(dates.elementAt(0));
+
+			layout.addComponent(button_plus);
+
 		//Send and Back Button
 		Button button_save = new Button("Save");
 		Button button_back = new Button("Back");
@@ -118,20 +159,27 @@ public class NewEvent extends VerticalLayout implements View {
 				//fetching values
 				String name = textfield_eventname.getValue();	
 				String ort = textfield_eventort.getValue();	
-
+			     
 				User admin = new User(); //TODO id lalal not lik thot
 				
 				//new User object
 				DoodleEvent e = new DoodleEvent(name,ort,admin);
-
-				//Database connection
+				
 				Session session =  InitSession.getSession().openSession();
 				Transaction t = session.beginTransaction();
 				t.begin();
-				//saving user
 				session.save(admin);
 
 				session.save(e);
+				
+				for(int i = 0 ; i < dates.size(); i++){
+					Date d = dates.elementAt(i).getValue();
+					if(d.after(new Date())){
+						Zeit ti = new Zeit(d, d , e); //TODO endzeit
+						session.save(ti);
+					}
+				}
+				
 				t.commit();
 				session.close();
 				
