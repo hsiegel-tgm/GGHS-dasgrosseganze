@@ -1,12 +1,19 @@
 package model;
 
+import java.util.Collection;
+import java.util.Vector;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.Email;
 
@@ -28,17 +35,24 @@ import org.hibernate.validator.constraints.Email;
 	@NamedQuery(name="getUsers",query="FROM User"),
 })
 
+
 @Entity
 public class User {
 	@Id 
 	@GeneratedValue
-	long ID;
+	private long ID;
 
-	String username;
+	@Column(unique=true)
+	private String username;
 
 	@Email
-	String email;
+	private String email;
 
+	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
+	private Collection<Notification> notifications = new Vector <Notification>();  
+	
+	
+	
 	public User(){
 		this.username="User";
 		this.email="no@email.com";
