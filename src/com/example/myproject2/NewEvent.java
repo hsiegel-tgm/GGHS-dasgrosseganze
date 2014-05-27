@@ -218,37 +218,34 @@ public class NewEvent extends VerticalLayout implements View {
 				String name = textfield_eventname.getValue();
 				String ort = textfield_eventort.getValue();
 
+				//fetching invited Users
 				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue(); 
-				
 				Vector vector_invitedUsers = new Vector();
 				vector_invitedUsers.addAll(invitedUsers);
-				
+
+				//Validation
 				boolean valid = true;
-				
+
 				try {
+					//validating text Fields
+					textfield_eventort.validate();
+					textfield_eventname.validate();
 					
-					// saving all the Dates
+					// validating all the Dates
 					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
-						// checking if date lies in the Future
+						// checking if date lies in the past
 						Date d = popupDateField_zeiten.elementAt(i).getValue();
 						if (d.before(new Date())) {
 							popupDateField_zeiten.elementAt(i).setValidationVisible(true);
-							layout.addComponent(new Label("des wor wohl nix..."));
+							layout.addComponent(new Label("Please set a Future Date - Date Input Field number:"+(i+1)));
+							valid=false;
 						}
 					}
 					
-					
-					
-					
-					
-					// TODO validation of the others...
-					textfield_eventort.validate();
-					textfield_eventname.validate();
-					valid = true;
-					
+					//Checking if there is at least one User invited
 					if(vector_invitedUsers.size()==0){
 						valid =  false;
-						layout.addComponent(new Label("des wor wohl wieder nix..."));
+						layout.addComponent(new Label("Please Invite at least one User"));
 					}
 					
 				} catch (InvalidValueException e) {
@@ -257,9 +254,6 @@ public class NewEvent extends VerticalLayout implements View {
 				}
 
 				if (valid) {
-					
-					
-
 					// Database Connection
 					Session session = InitSession.getSession().openSession();
 					Transaction t = session.beginTransaction();
@@ -310,9 +304,9 @@ public class NewEvent extends VerticalLayout implements View {
 						// User
 						User invitedUser = (User) result_3.get(0);
 
+						//Saving into database
 						Eingeladen eingeladen = new Eingeladen(invitedUser, e);
 						session.save(eingeladen);
-
 					}
 
 					t.commit();
@@ -320,7 +314,6 @@ public class NewEvent extends VerticalLayout implements View {
 
 					// Notification
 					layout.addComponent(new Label("Event was saved..."));
-
 				}
 			}
 		});
