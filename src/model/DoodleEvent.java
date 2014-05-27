@@ -97,6 +97,11 @@ public class DoodleEvent {
 		return null;
 	} 
 	
+	public Long getID(){
+		return this.ID;
+	}
+	
+	public DoodleEvent(){}
 	
 	
 }

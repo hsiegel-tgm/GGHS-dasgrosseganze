@@ -101,4 +101,9 @@ public class User {
 	public String toString(){
 		return "username:"+this.username+" - email:"+this.email;
 	}
+	
+	public Long getID(){
+		return this.ID;
+	}
+	
 }

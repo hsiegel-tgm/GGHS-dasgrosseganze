@@ -71,6 +71,9 @@ TODO GUI Test
 public class NewEvent extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
 	
+	private Vector  <User>  usr = new Vector<User>();
+
+	
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
 	
@@ -99,6 +102,7 @@ public class NewEvent extends VerticalLayout implements View {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 
+		
 		// Eventname
 		textfield_eventname = new TextField();
 		textfield_eventname.setRequired(true);
@@ -124,7 +128,6 @@ public class NewEvent extends VerticalLayout implements View {
 				TimeZone.getTimeZone("UTC"));
 		popupDateField_zeiten.elementAt(0).setLocale(Locale.US);
 		popupDateField_zeiten.elementAt(0).setResolution(Resolution.MINUTE);
-		
 		
 		// TODO SESSION das gehoert auf jetztigen gaeendert
 		String username_TESTING = "user2";
@@ -153,8 +156,10 @@ public class NewEvent extends VerticalLayout implements View {
 			User u = (User) result_allUsers.get(i);
 			//Filtering the admin user
 			if (!(u.getUsername().equals(username_TESTING))) {
+				//twinColSet_friends.addItem(i);
 				twinColSet_friends.addItem(i);
-				twinColSet_friends.setItemCaption(i, "" + u.getUsername());
+				usr.add(u); //TODO result Collection anstatt extra Vector
+				twinColSet_friends.setItemCaption(i/*u.getID()*/, "" + u.getUsername()); //TODO das is scheisse
 			}
 		}
 		twinColSet_friends.setRows(result_allUsers.size());
@@ -210,7 +215,6 @@ public class NewEvent extends VerticalLayout implements View {
 			}
 		});
 
-		
 		// Send Button Listener
 		button_save.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
@@ -288,25 +292,30 @@ public class NewEvent extends VerticalLayout implements View {
 						}
 					}
 
-					//Saving Invited Users
-					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
-						int user_nummer = ((Integer) (vector_invitedUsers.elementAt(j))) + 1;
-
-						// create query
-						Query query_InvitedUser = (Query) session.getNamedQuery("getSpecificUser");
-
-						// setting parameters
-						query_InvitedUser.setString("id", "" + user_nummer);
-
-						// run query and fetch result
-						List<?> result_3 = query_InvitedUser.list();
-
-						// User
-						User invitedUser = (User) result_3.get(0);
-
-						//Saving into database
-						Eingeladen eingeladen = new Eingeladen(invitedUser, e);
-						session.save(eingeladen);
+//					//Saving Invited Users
+//					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
+//						int user_nummer = ((Integer) (vector_invitedUsers.elementAt(j))) + 1;
+//
+//						// create query
+//						Query query_InvitedUser = (Query) session.getNamedQuery("getSpecificUser");
+//
+//						// setting parameters
+//						query_InvitedUser.setString("id", "" + user_nummer);
+//
+//						// run query and fetch result
+//						List<?> result_3 = query_InvitedUser.list();
+//
+//						// User
+//						User invitedUser = (User) result_3.get(0);
+//
+//						//Saving into database
+//						Eingeladen eingeladen = new Eingeladen(invitedUser, e);
+//						session.save(eingeladen);
+//					}
+					
+					for(int j = 0 ; j<vector_invitedUsers.size();++j){
+						int nummer = ((Integer) (vector_invitedUsers.elementAt(j))) + 1;
+						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);
 					}
 
 					t.commit();

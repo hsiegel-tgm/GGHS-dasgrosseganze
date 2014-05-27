@@ -18,9 +18,7 @@ public class Eingeladen {
 	private User user;
 	
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	private DoodleEvent event;
-
-	
+	private DoodleEvent event;	
 	
 	public Eingeladen(User user, DoodleEvent event) {
 		super();
