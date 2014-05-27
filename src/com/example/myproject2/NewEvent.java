@@ -1,43 +1,4 @@
-
-
 package com.example.myproject2;
-
-import javax.servlet.annotation.WebServlet;
-
-import model.DoodleEvent;
-import model.User;
-import model.Zeit;
-
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Field.ValueChangeEvent;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
-
-
-
-
-
-
-
-
-
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -47,17 +8,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import org.hibernate.Query;
 
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.ConstraintViolation;
-import javax.validation.executable.ExecutableValidator;
-import javax.validation.metadata.BeanDescriptor;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,138 +28,280 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.Vector;
+
+import model.DoodleEvent;
+import model.Eingeladen;
+import model.User;
+import model.Zeit;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.TwinColSelect;
+import com.vaadin.ui.VerticalLayout;
+
 /**
  * 
  * @version 2014-05-26 Hannah erstellt
  * @author Hannah Siegel
  * 
- * TODO JUnit
- * TODO Komment
- * TODO Design pefekto
- * TODO GUI Test
- * TODO Coding style
+ *         TODO JUnit 
+ *         TODO Komment
+TODO Design pefekto 
+TODO GUI Test 
+TODO Coding style 
+//TODO Minus Button
+ * TODO nav, master obj??
+ * 
  * 
  * */
 public class NewEvent extends VerticalLayout implements View {
-	//Textfields
-	private TextField textfield_eventname,textfield_eventort;
-	private Vector<PopupDateField> dates = new Vector<PopupDateField>();
+	private static final long serialVersionUID = 1L;
 	
-	//Navigator and master object
-	private  FatNavigator navigator;
+	// Textfields
+	private TextField textfield_eventname, textfield_eventort;
+	
+	// Datefields
+	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
+	
+	//Friends
+	private TwinColSelect twinColSet_friends;
+
+	// Navigator and master object
+	private FatNavigator navigator;
 	private Master master;
-	
+
 	/**
 	 * Constructor
 	 * 
-	 * @param nav navigator object
-	 * @param m master object
+	 * @param nav
+	 *            navigator object
+	 * @param m
+	 *            master object
 	 */
-	protected  NewEvent(FatNavigator nav,Master m) {
+	protected NewEvent(FatNavigator nav, Master m) {
 		this.navigator = nav;
 		this.master = m;
-		
+
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 
-		layout.addComponent(new Label("NEW EVENT"));
-		
-		//username Textfield
-		layout.addComponent(new Label("eventname:"));
+
+		// Eventname
 		textfield_eventname = new TextField();
-		layout.addComponent(textfield_eventname);
+		textfield_eventname.setRequired(true);
+		textfield_eventname.setRequiredError("Please set the Eventname ");
 
-		layout.addComponent(new Label("eventort:"));
+		// Eventort
 		textfield_eventort = new TextField();
+		textfield_eventort.setValidationVisible(true);
+		textfield_eventort.setRequired(true);
+		textfield_eventort.setRequiredError("Please set the Event Location");
+
+		// Save and Back Button
+		Button button_save = new Button(Variables.SAVE);
+		Button button_back = new Button(Variables.BACK);
+		Button button_logout = new Button(Variables.LOGOUT);
+
+		// Initialize first DateField
+		popupDateField_zeiten.add(new PopupDateField());
+		popupDateField_zeiten.elementAt(0).setValue(new Date());
+		popupDateField_zeiten.elementAt(0).setImmediate(true);
+		popupDateField_zeiten.elementAt(0).setTimeZone(
+				TimeZone.getTimeZone("UTC"));
+		popupDateField_zeiten.elementAt(0).setLocale(Locale.US);
+		popupDateField_zeiten.elementAt(0).setResolution(Resolution.MINUTE);
+
+		
+		
+		// Plus Button
+		Button button_plus = new Button("+");
+		button_plus.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				// New Date Possibilities
+				popupDateField_zeiten.add(new PopupDateField());
+				popupDateField_zeiten.lastElement().setValue(new Date());
+				popupDateField_zeiten.lastElement().setImmediate(true);
+				popupDateField_zeiten.lastElement().setTimeZone(
+						TimeZone.getTimeZone("UTC"));
+				popupDateField_zeiten.lastElement().setLocale(Locale.US);
+				popupDateField_zeiten.lastElement().setResolution(
+						Resolution.MINUTE);
+				layout.addComponent(popupDateField_zeiten.lastElement());
+
+			}
+		});
+
+		// TODO das gehoert auf jetztigen gaeendert
+		String username_TESTING = "user2";
+		twinColSet_friends = new TwinColSelect();
+
+		// Database Connection
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+
+		// create query
+		Query query_allUsers = (Query) session.getNamedQuery("getUsers");
+
+		// run query and fetch reslut
+		List<?> result_allUsers = query_allUsers.list();
+
+		for (int i = 0; i < result_allUsers.size(); i++) {
+			User u = (User) result_allUsers.get(i);
+			if (!(u.getUsername().equals(username_TESTING))) {
+				twinColSet_friends.addItem(i);
+				twinColSet_friends.setItemCaption(i, "" + u.getUsername());
+			}
+		}
+		twinColSet_friends.setRows(result_allUsers.size());
+
+		t.commit();
+		session.close();
+
+		twinColSet_friends.setNullSelectionAllowed(false);
+		twinColSet_friends.setMultiSelect(true);
+		twinColSet_friends.setImmediate(true);
+		twinColSet_friends.setLeftColumnCaption("Availaible Users");
+		twinColSet_friends.setRightColumnCaption("Invited Users");
+
+		// Adding the Components
+		layout.addComponent(new Label("NEW EVENT"));
+		layout.addComponent(new Label("Eventname:"));
+		layout.addComponent(textfield_eventname);
+		layout.addComponent(new Label("Eventlocation:"));
 		layout.addComponent(textfield_eventort);
-
-
-		 dates.add(new PopupDateField());
-	     dates.elementAt(0).setValue(new Date());
-	     dates.elementAt(0).setImmediate(true);
-	     dates.elementAt(0).setTimeZone(TimeZone.getTimeZone("UTC"));
-	     dates.elementAt(0).setLocale(Locale.US);
-	     dates.elementAt(0).setResolution(Resolution.MINUTE);
-		
-	     Button button_plus = new Button("+");
-			button_plus.addClickListener(new Button.ClickListener() {
-				public void buttonClick(ClickEvent event) {
-					 dates.add(new PopupDateField());
-					 dates.lastElement().setValue(new Date());
-					 dates.lastElement().setImmediate(true);
-				     dates.lastElement().setTimeZone(TimeZone.getTimeZone("UTC"));
-				     dates.lastElement().setLocale(Locale.US);
-				     dates.lastElement().setResolution(Resolution.MINUTE);
-				     layout.addComponent(dates.lastElement());
-
-				}
-			});
-	     
-			
-	     
-	     layout.addComponent(dates.elementAt(0));
-
-			layout.addComponent(button_plus);
-
-		//Send and Back Button
-		Button button_save = new Button("Save");
-		Button button_back = new Button("Back");
-		layout.addComponent(button_save);		
+		layout.addComponent(popupDateField_zeiten.elementAt(0));
+		layout.addComponent(twinColSet_friends);
+		layout.addComponent(button_plus);
+		layout.addComponent(button_save);
 		layout.addComponent(button_back);
-		
-		//Back Button Listener
+		layout.addComponent(button_logout);
+
+		// Back Button Listener
 		button_back.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				navigator.navigateTo(Variables.STARTPAGE);
 			}
 		});
-		
-		//Send Button Listener
-		button_save.addClickListener(new Button.ClickListener() {
+
+		// Logout Button Listener
+		button_logout.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				
-				//fetching values
-				String name = textfield_eventname.getValue();	
-				String ort = textfield_eventort.getValue();	
-			     
-				User admin = new User(); //TODO id lalal not lik thot
-				
-				//new User object
-				DoodleEvent e = new DoodleEvent(name,ort,admin);
-				
-				Session session =  InitSession.getSession().openSession();
-				Transaction t = session.beginTransaction();
-				t.begin();
-				session.save(admin);
-
-				session.save(e);
-				
-				for(int i = 0 ; i < dates.size(); i++){
-					Date d = dates.elementAt(i).getValue();
-					if(d.after(new Date())){
-						Zeit ti = new Zeit(d, d , e); //TODO endzeit
-						session.save(ti);
-					}
-				}
-				
-				t.commit();
-				session.close();
-				
-				//Notification
-				layout.addComponent(new Label("Event was saved"));
-
+				navigator.navigateTo(Variables.LOGIN);
 			}
 		});
-	}
+		
+		// Send Button Listener
+		button_save.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				System.out.println("anfang...");
+				boolean valid = true;
+				
+				try {
+					// TODO validation of the others...
+					textfield_eventort.validate();
+					textfield_eventname.validate();
+					valid = true;
+				} catch (InvalidValueException e) {
+					valid = false;
+					layout.addComponent(new Label(e.getMessage()));
+				}
 
+				if (valid) {
+					
+					// fetching values
+					String name = textfield_eventname.getValue();
+					String ort = textfield_eventort.getValue();
+
+					Collection<?> res1 = (Collection<?>) twinColSet_friends.getValue(); 
+					
+					Vector x = new Vector();
+					x.addAll(res1);
+
+					// Database Connection
+					Session session = InitSession.getSession().openSession();
+					Transaction t = session.beginTransaction();
+					t.begin();
+
+					// create query
+					Query q = (Query) session.getNamedQuery("getSpecificUser");
+
+					// setting parameters
+					q.setString("id", "1"); // TODO - User session
+
+					// run query and fetch reslut
+					List<?> res = q.list();
+
+					// User
+					User admin = (User) res.get(0);
+
+					// new User object
+					DoodleEvent e = new DoodleEvent(name, ort, admin);
+
+					// Saving Event
+					//session.save(admin); // TODO remove when done!!
+					session.save(e);
+
+					// saving all the Dates
+					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
+						// checking if date lies in the Future
+						Date d = popupDateField_zeiten.elementAt(i).getValue();
+						if (d.after(new Date())) {
+							Zeit eventTime = new Zeit(d, d, e); // TODO endzeit
+							// saving the time
+							session.save(eventTime);
+						}
+					}
+
+					for (int j = 0; j < x.size(); ++j) {
+						int user_nummer = ((Integer) (x.elementAt(j))) + 1;
+
+						// create query
+						Query q2 = (Query) session.getNamedQuery("getSpecificUser");
+
+						// setting parameters
+						q2.setString("id", "" + user_nummer);
+
+						// run query and fetch result
+						List<?> res3 = q2.list();
+
+						// User
+						User k = (User) res3.get(0);
+
+						Eingeladen eingeladen = new Eingeladen(k, e);
+						session.save(eingeladen);
+
+					}
+
+					t.commit();
+					session.close();
+
+					// Notification
+					layout.addComponent(new Label("Event was saved..."));
+
+				}
+			}
+		});
+
+	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
-	
-
-	
 }
-
-
-

@@ -10,9 +10,19 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
+
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+@NamedQueries({
+	@NamedQuery(name="getEvents",query="FROM DoodleEvent"), 
+})
+//TODO where user id =  user session
+
 
 @Entity
 @Table(name="event")
@@ -26,26 +36,27 @@ public class DoodleEvent {
 		
 	private String ort;
 	
-	@OneToOne(optional=false)
-	private User admin;
+	//@OneToOne(optional=false)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	private User user;
 	
 	private Date fixDatum;
 	
 	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
 	//private Collection<Zeit> zeiten = new Vector <Zeit>(); 
 	
-	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
-	private Collection<Kommentar> kommentare = new Vector <Kommentar>();
+	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
+	//private Collection<Kommentar> kommentare = new Vector <Kommentar>();
 	
 	public DoodleEvent(String name, String ort, User admin) {
 		super();
 		this.name = name;
 		this.ort = ort;
-		this.admin = admin;
+		this.user = admin;
 	}
 	
 	public void addKommentar(Kommentar k){
-		this.kommentare.add(k);
+		//this.kommentare.add(k);
 	}
 	
 	public String getName() {
@@ -66,11 +77,11 @@ public class DoodleEvent {
 	}
 
 	public User getAdmin() {
-		return admin;
+		return user;
 	}
 
 	public void setAdmin(User admin) {
-		this.admin = admin;
+		this.user = admin;
 	}
 
 	public Date getFixDatum() {
@@ -82,7 +93,8 @@ public class DoodleEvent {
 	}
 
 	public Collection<Kommentar> getKommentare() {
-		return kommentare;
+		//return kommentare;
+		return null;
 	} 
 	
 	

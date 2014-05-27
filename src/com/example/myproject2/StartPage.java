@@ -17,7 +17,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
 
-/*
+/**
+ * 
+ * @author Hannah Siegel
  * 
  * 2014-05-07 Hannah erstellt
  * 
@@ -26,7 +28,6 @@ import com.vaadin.ui.Button.ClickEvent;
  * TODO Komment
  * TODO Design pefekto
  * TODO GUI Test
- * TODO Variablen
  * TODO Coding style
  * 
  * 
@@ -47,13 +48,16 @@ public class StartPage extends VerticalLayout implements View {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 		
-		Button buttonLogOut = new Button("Log Out");
-		buttonLogOut.addClickListener(new Button.ClickListener() {
+		//LogOut Button
+		Button button_LogOut = new Button("Log Out");
+		button_LogOut.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				navigator.navigateTo(Variables.LOGIN);
 			}
 		});
+		
+		//newEvent Button
 		Button button_newEvent= new Button("New Event");
 		button_newEvent.addClickListener(new Button.ClickListener() {
 			@Override
@@ -62,20 +66,19 @@ public class StartPage extends VerticalLayout implements View {
 			}
 		});
 		
-		layout.addComponent(new Label("Doodle - not yet implemented!"));
+		//adding buttons
 		layout.addComponent(button_newEvent);	
-		layout.addComponent(buttonLogOut);	
+		layout.addComponent(button_LogOut);	
 
-        
+        //testing..
 		String s;
-		
 		try {
 		    VaadinSession.getCurrent().getLockInstance().lock();
 		    s = (String) VaadinSession.getCurrent().getAttribute(Variables.USERNAME);
+			layout.addComponent(new Label("username: " + s));
 		} finally {
 		    VaadinSession.getCurrent().getLockInstance().unlock();
 		}
-		layout.addComponent(new Label("username: " + s));
 	}
 
 

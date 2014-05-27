@@ -9,6 +9,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+
+
+/**
+ * @author Hannah Siegel
+ * @version 2014-05-26 
+ * 
+ * TODO JUnit
+ * TODO Komment
+ * 
+ * TODO Coding style
+ * TODO Endzeit
+ * */
+
+
 @Entity
 public class Zeit {
 	@Id
@@ -53,5 +67,6 @@ public class Zeit {
 		this.event = event;
 	}
 	
+	public Zeit(){}
 	
 }

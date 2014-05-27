@@ -16,12 +16,9 @@ import com.vaadin.ui.UI;
  * @version 2014-05-07 Hannah erstellt
  * @author Hannah Siegel
  * 
- * TODO fertig
  * TODO JUnit
  * TODO Komment
- * TODO Design pefekto
- * TODO GUI Test
- * TODO Variablen
+
  * TODO Coding style
  * */
 
@@ -46,7 +43,7 @@ public class Master extends UI {
 		//navigator = new Navigator (this,this);
 		navigator = new FatNavigator(this,this);
 		//addin the Views
-		navigator.addView(Variables.LOGIN,new Myproject2UI(navigator,this));
+		navigator.addView(Variables.LOGIN,new LogIn(navigator,this));
 		navigator.addView(Variables.REGISTER,new NewUser(navigator,this));
 		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));

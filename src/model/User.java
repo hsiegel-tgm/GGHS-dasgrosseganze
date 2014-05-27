@@ -30,9 +30,12 @@ import org.hibernate.validator.constraints.Email;
  * TODO Coding style
  *  
  * */
-//Named Query
+//TODO named query get users must be ordered
+//Named Query 
 @NamedQueries({
-	@NamedQuery(name="getUsers",query="FROM User"),
+	@NamedQuery(name="getUsers",query="FROM User u order by u.ID"),
+	@NamedQuery(name="getSpecificUser",query="FROM User u WHERE  u.ID = :id"),
+
 })
 
 
@@ -51,6 +54,8 @@ public class User {
 	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
 	private Collection<Notification> notifications = new Vector <Notification>();  
 	
+	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
+	//private Collection<DoodleEvent> admin_of_events = new Vector <DoodleEvent>();  
 	
 	
 	public User(){

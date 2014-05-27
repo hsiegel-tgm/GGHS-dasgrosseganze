@@ -79,6 +79,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 public class NewUser extends VerticalLayout implements View {
 	//Textfields
 	private TextField textfield_username,textfield_email;
+	
 	//Navigator and master object
 	private  FatNavigator navigator;
 	private Master master;
@@ -102,8 +103,6 @@ public class NewUser extends VerticalLayout implements View {
 		layout.addComponent(new Label("username:"));
         textfield_username = new TextField();
 		layout.addComponent(textfield_username);
-
-	
 
 		//email Textfield
 		layout.addComponent(new Label("email:"));
@@ -138,13 +137,14 @@ public class NewUser extends VerticalLayout implements View {
 				Session session =  InitSession.getSession().openSession();
 				Transaction t = session.beginTransaction();
 				t.begin();
+				
 				//saving user
 				session.save(u);
 				t.commit();
 				session.close();
 				
 				//Notification
-				layout.addComponent(new Label("User was saved"));
+				layout.addComponent(new Label("User was saved . . . "));
 
 			}
 		});
