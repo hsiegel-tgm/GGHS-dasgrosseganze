@@ -194,7 +194,6 @@ public class NewEvent extends VerticalLayout implements View {
 		// Plus Button Listener
 		button_plus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-
 				PopupDateField p = new PopupDateField();
 				// New Date Possibilities
 				p.setValue(new Date());
@@ -211,10 +210,8 @@ public class NewEvent extends VerticalLayout implements View {
 		button_minus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				if (popupDateField_zeiten.size() > 1) {
-					// New Date Possibilities
-					PopupDateField p = popupDateField_zeiten
-							.elementAt(popupDateField_zeiten.size() - 1);
-
+					//remove date possibility
+					PopupDateField p = popupDateField_zeiten.elementAt(popupDateField_zeiten.size() - 1);
 					NewEvent.this.removeComponent(p);
 					popupDateField_zeiten.remove(p);
 				}
@@ -228,12 +225,9 @@ public class NewEvent extends VerticalLayout implements View {
 				String name = textfield_eventname.getValue();
 				String ort = textfield_eventort.getValue();
 
-				// fetching invited Users TODO
-				Collection<?> invitedUsers2 = (Collection<?>) twinColSet_friends.getValue();
-				//System.out.println( "THHEHEHEHEH"+ invitedUsers.getClass().getName());
-				
-				Vector vector_invitedUsers2 = new Vector();
-				vector_invitedUsers2.addAll(invitedUsers2);
+				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
+				Vector vector_invitedUsers = new Vector();
+				vector_invitedUsers.addAll(invitedUsers);
 				
 				// Validation
 				boolean valid = true;
@@ -258,7 +252,7 @@ public class NewEvent extends VerticalLayout implements View {
 					}
 
 					// Checking if there is at least one User invited
-					if (vector_invitedUsers2.size() == 0) {
+					if (vector_invitedUsers.size() == 0) {
 						valid = false;
 						layout.addComponent(new Label("Please Invite at least one User"));
 					}
@@ -307,24 +301,24 @@ public class NewEvent extends VerticalLayout implements View {
 					session.close();
 
 					
-					// fetching invited Users
-					Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
-					
-					Vector vector_invitedUsers = new Vector();
-					vector_invitedUsers.addAll(invitedUsers);
+//					// fetching invited Users
+//					Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
+//					//fetching invited Users
+//					Vector vector_invitedUsers = new Vector();
+//					vector_invitedUsers.addAll(invitedUsers);
 
-
-					
+					//Database connection
 					Session session2 = InitSession.getSession().openSession();
 					Transaction t2 = session2.beginTransaction();
 					t2.begin();
 
+					//Saving invited users into DB
 					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
+						//fetching number of added User
 						int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
-
-						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);
-
 						
+						//saving into DB
+						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);						
 						session2.save(eingeladen);
 
 					}
