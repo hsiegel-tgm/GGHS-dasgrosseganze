@@ -320,7 +320,6 @@ public class NewEvent extends VerticalLayout implements View {
 						//saving into DB
 						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);						
 						session2.save(eingeladen);
-
 					}
 
 					t2.commit();

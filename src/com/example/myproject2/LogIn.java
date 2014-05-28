@@ -35,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 
 
 
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,8 +73,6 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * TODO Design pefekto
  * TODO GUI Test
  * 
- * Hannah
- * TODO Coding style
  * 
  * */
 
@@ -106,7 +105,6 @@ public class LogIn extends VerticalLayout implements View {
 		layout.addComponent(textfield_user);
 		layout.addComponent(button_login);
 		layout.addComponent(button_NewUser); 
-
 		
 		//Register new User Listener
 		button_NewUser.addClickListener(new Button.ClickListener() {
@@ -135,13 +133,6 @@ public class LogIn extends VerticalLayout implements View {
 					if((inputUsername.equals(user.getUsername()))&&b){
 						//log in successful
 						String user_id = user.getID().longValue()+"";
-						//Saving into Session
-						try {
-						    VaadinSession.getCurrent().getLockInstance().lock();
-						    VaadinSession.getCurrent().setAttribute(Variables.USERNAME, inputUsername);
-						} finally {
-						    VaadinSession.getCurrent().getLockInstance().unlock();
-						}
 						
 						//Navigate to startpage
 						navigator.navigateTo(Variables.STARTPAGE+"/"+inputUsername+"/"+user_id);

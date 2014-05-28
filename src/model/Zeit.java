@@ -25,7 +25,7 @@ import javax.persistence.NamedQuery;
  * */
 
 @NamedQueries({
-	@NamedQuery(name="getTimePossibilitesforSpecificEvent",query="FROM Zeit z WHERE z.ID = :id"),
+	@NamedQuery(name="getTimePossibilitesforSpecificEvent",query="FROM Zeit z WHERE z.event.ID = :id"),
 })
 
 @Entity
