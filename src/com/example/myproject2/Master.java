@@ -40,13 +40,15 @@ public class Master extends UI {
 	 */
 	protected void init (VaadinRequest request){
 		//new navigator
-		//navigator = new Navigator (this,this);
 		navigator = new FatNavigator(this,this);
+		
 		//addin the Views
 		navigator.addView(Variables.LOGIN,new LogIn(navigator,this));
 		navigator.addView(Variables.REGISTER,new NewUser(navigator,this));
 		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
+		navigator.addView(Variables.VOTE,new Abstimmen(navigator,this));
+
 	}
 	
 	/**

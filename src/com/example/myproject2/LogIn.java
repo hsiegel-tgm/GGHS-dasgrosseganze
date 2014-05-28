@@ -6,6 +6,7 @@ import model.User;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -23,6 +24,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
 
 
 
@@ -96,6 +98,7 @@ public class LogIn extends VerticalLayout implements View {
 		
 		//Layout Components
 		Button button_login = new Button("Go!");
+		button_login.setClickShortcut(KeyCode.ENTER,null);
         textfield_user = new TextField();
 		Button button_NewUser = new Button("Register new User!");
 
@@ -131,7 +134,7 @@ public class LogIn extends VerticalLayout implements View {
 					User user = (User) res.get(i);
 					if((inputUsername.equals(user.getUsername()))&&b){
 						//log in successful
-						
+						String user_id = user.getID().longValue()+"";
 						//Saving into Session
 						try {
 						    VaadinSession.getCurrent().getLockInstance().lock();
@@ -141,7 +144,7 @@ public class LogIn extends VerticalLayout implements View {
 						}
 						
 						//Navigate to startpage
-						navigator.navigateTo(Variables.STARTPAGE);
+						navigator.navigateTo(Variables.STARTPAGE+"/"+inputUsername+"/"+user_id);
 						b = false;
 					}
 				}

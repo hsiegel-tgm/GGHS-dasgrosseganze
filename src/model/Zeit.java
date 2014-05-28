@@ -8,6 +8,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 
 
@@ -22,6 +24,9 @@ import javax.persistence.ManyToOne;
  * TODO Endzeit
  * */
 
+@NamedQueries({
+	@NamedQuery(name="getTimePossibilitesforSpecificEvent",query="FROM Zeit z WHERE z.ID = :id"),
+})
 
 @Entity
 public class Zeit {

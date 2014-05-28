@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 @NamedQueries({
 	@NamedQuery(name="getEvents",query="FROM DoodleEvent"), 
+	@NamedQuery(name="getSpecificEvent",query="FROM DoodleEvent d WHERE  d.ID = :id"),
 })
 //TODO where user id =  user session
 

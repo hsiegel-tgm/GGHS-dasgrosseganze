@@ -71,8 +71,9 @@ TODO GUI Test
 public class NewEvent extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
 	
-	private Vector  <User>  usr = new Vector<User>();
+	private Vector<User> usr = new Vector<User>();
 
+	private String m_username,m_userid;
 	
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
@@ -99,9 +100,13 @@ public class NewEvent extends VerticalLayout implements View {
 		this.navigator = nav;
 		this.master = m;
 
+
+	}
+	
+	void init(){
+		this.removeAllComponents();
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
-
 		
 		// Eventname
 		textfield_eventname = new TextField();
@@ -129,9 +134,6 @@ public class NewEvent extends VerticalLayout implements View {
 		popupDateField_zeiten.elementAt(0).setLocale(Locale.US);
 		popupDateField_zeiten.elementAt(0).setResolution(Resolution.MINUTE);
 		
-		// TODO SESSION das gehoert auf jetztigen gaeendert
-		String username_TESTING = "user2";
-		
 		//Users availaible for Invitation
 		twinColSet_friends = new TwinColSelect();
 		twinColSet_friends.setNullSelectionAllowed(false);
@@ -155,11 +157,10 @@ public class NewEvent extends VerticalLayout implements View {
 		for (int i = 0; i < result_allUsers.size(); i++) {
 			User u = (User) result_allUsers.get(i);
 			//Filtering the admin user
-			if (!(u.getUsername().equals(username_TESTING))) {
-				//twinColSet_friends.addItem(i);
+			if (!(u.getUsername().equals(m_username))) {
 				twinColSet_friends.addItem(i);
 				usr.add(u); //TODO result Collection anstatt extra Vector
-				twinColSet_friends.setItemCaption(i/*u.getID()*/, "" + u.getUsername()); //TODO das is scheisse
+				twinColSet_friends.setItemCaption(i, "" + u.getUsername());
 			}
 		}
 		twinColSet_friends.setRows(result_allUsers.size());
@@ -267,7 +268,7 @@ public class NewEvent extends VerticalLayout implements View {
 					Query q = (Query) session.getNamedQuery("getSpecificUser");
 
 					// setting parameters
-					q.setString("id", "1"); // TODO SESSION - User session
+					q.setString("id", m_userid);
 
 					// run query and fetch reslut
 					List<?> res = q.list();
@@ -313,23 +314,47 @@ public class NewEvent extends VerticalLayout implements View {
 //						session.save(eingeladen);
 //					}
 					
-					for(int j = 0 ; j<vector_invitedUsers.size();++j){
-						int nummer = ((Integer) (vector_invitedUsers.elementAt(j))) + 1;
-						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);
-					}
-
 					t.commit();
 					session.close();
+					
+					Session session2 = InitSession.getSession().openSession();
+					Transaction t2 = session2.beginTransaction();
+					t2.begin();
+					
+					for(int j = 0 ; j<vector_invitedUsers.size();++j){
+						//System.out.println("1 : "+j);
+						//System.out.println("2 size : "+vector_invitedUsers.size());
+
+						vector_invitedUsers.elementAt(j);
+
+						int nummer = ((Integer) (vector_invitedUsers.elementAt(j))) /*+ 1*/;
+						//System.out.println("2 : "+nummer);
+
+						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e); //TODO +1 neein
+						//System.out.println("4 name: "+usr.elementAt(nummer).getUsername());
+
+						//session2.save(eingeladen); //TODO einkommentieren und debuggen
+
+					}
+
+					t2.commit();
+					session2.close();
 
 					// Notification
 					layout.addComponent(new Label("Event was saved..."));
 				}
 			}
 		});
-
+		
+		
 	}
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		
+		m_username = event.getParameters().split("/")[0];
+		m_userid = event.getParameters().split("/")[1];
+		init();
 	}
 }

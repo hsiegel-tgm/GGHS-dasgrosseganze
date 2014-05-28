@@ -13,6 +13,7 @@ public class Variables {
 	public static final String SAVE = "Save";
 	public static final String BACK = "Back";
 	public static final String LOGOUT = "Logout";
+	public static final String VOTE = "vote";
 
 
 }
