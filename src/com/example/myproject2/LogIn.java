@@ -34,6 +34,7 @@ import com.vaadin.ui.VerticalLayout;
 
 
 
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,7 +82,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 public class LogIn extends VerticalLayout implements View {
 	private TextField textfield_user;
 	private  FatNavigator navigator;
-	private Master master;
+	private String m_username, m_userid;
 
 	/**
 	 * @param nav
@@ -89,7 +90,6 @@ public class LogIn extends VerticalLayout implements View {
 	 */
 	public  LogIn( FatNavigator nav, Master m) {
 		this.navigator=nav;
-		this.master=m;
 		
 		final VerticalLayout layout =this;
 		layout.setMargin(true);

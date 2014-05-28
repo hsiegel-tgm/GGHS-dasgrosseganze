@@ -60,28 +60,25 @@ import com.vaadin.ui.VerticalLayout;
  * @version 2014-05-26 Hannah erstellt
  * @author Hannah Siegel
  * 
- *         TODO JUnit 
-TODO Design pefekto 
-TODO GUI Test 
-//TODO Minus Button
- * TODO nav, master obj??
+ *         TODO JUnit TODO Design pefekto TODO GUI Test //TODO Minus Button TODO
+ *         nav, master obj??
  * 
  * 
  * */
 public class NewEvent extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Vector<User> usr = new Vector<User>();
 
-	private String m_username,m_userid;
-	
+	private String m_username, m_userid;
+
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
-	
+
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
-	
-	//Friends
+
+	// Friends
 	private TwinColSelect twinColSet_friends;
 
 	// Navigator and master object
@@ -99,15 +96,12 @@ public class NewEvent extends VerticalLayout implements View {
 	protected NewEvent(FatNavigator nav, Master m) {
 		this.navigator = nav;
 		this.master = m;
-
-
 	}
-	
-	void init(){
-		this.removeAllComponents();
+
+	void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
-		
+
 		// Eventname
 		textfield_eventname = new TextField();
 		textfield_eventname.setRequired(true);
@@ -115,15 +109,16 @@ public class NewEvent extends VerticalLayout implements View {
 
 		// Eventort
 		textfield_eventort = new TextField();
-		//textfield_eventort.setValidationVisible(true);
+		// textfield_eventort.setValidationVisible(true);
 		textfield_eventort.setRequired(true);
-		textfield_eventort.setRequiredError("Please set the Event Location");		
-		
+		textfield_eventort.setRequiredError("Please set the Event Location");
+
 		// Buttons
 		Button button_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 		Button button_logout = new Button(Variables.LOGOUT);
 		Button button_plus = new Button("+");
+		Button button_minus = new Button("-");
 
 		// Initialize first DateField
 		popupDateField_zeiten.add(new PopupDateField());
@@ -133,15 +128,15 @@ public class NewEvent extends VerticalLayout implements View {
 				TimeZone.getTimeZone("UTC"));
 		popupDateField_zeiten.elementAt(0).setLocale(Locale.US);
 		popupDateField_zeiten.elementAt(0).setResolution(Resolution.MINUTE);
-		
-		//Users availaible for Invitation
+
+		// Users availaible for Invitation
 		twinColSet_friends = new TwinColSelect();
 		twinColSet_friends.setNullSelectionAllowed(false);
 		twinColSet_friends.setMultiSelect(true);
 		twinColSet_friends.setImmediate(true);
 		twinColSet_friends.setLeftColumnCaption("Availaible Users");
 		twinColSet_friends.setRightColumnCaption("Invited Users");
-		
+
 		// Database Connection
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
@@ -153,19 +148,22 @@ public class NewEvent extends VerticalLayout implements View {
 		// run query and fetch reslut
 		List<?> result_allUsers = query_allUsers.list();
 
-		//Saving Users into Collection
+		// Saving Users into Collection
+		boolean founduser = false;
 		for (int i = 0; i < result_allUsers.size(); i++) {
 			User u = (User) result_allUsers.get(i);
-			//Filtering the admin user
+			// Filtering the admin user
 			if (!(u.getUsername().equals(m_username))) {
-				twinColSet_friends.addItem(i);
-				usr.add(u); //TODO result Collection anstatt extra Vector
-				twinColSet_friends.setItemCaption(i, "" + u.getUsername());
+				twinColSet_friends.addItem(!founduser ? i : i-1);
+				usr.add(u);
+				twinColSet_friends.setItemCaption(!founduser ? i : i-1, "" + u.getUsername());
+			} else {
+				founduser = true;
 			}
 		}
 		twinColSet_friends.setRows(result_allUsers.size());
 
-		//closing Database
+		// closing Database
 		t.commit();
 		session.close();
 
@@ -180,39 +178,46 @@ public class NewEvent extends VerticalLayout implements View {
 		layout.addComponent(popupDateField_zeiten.elementAt(0));
 		layout.addComponent(twinColSet_friends);
 		layout.addComponent(button_plus);
+		layout.addComponent(button_minus);
 		layout.addComponent(button_save);
 		layout.addComponent(button_back);
 		layout.addComponent(button_logout);
 
 		// Back Button Listener
-		button_back.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo(Variables.STARTPAGE);
-			}
-		});
+		button_back.addClickListener(new PinkShoes(navigator,
+				Variables.STARTPAGE, m_username, m_userid));
 
 		// Logout Button Listener
-		button_logout.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo(Variables.LOGIN);
-			}
-		});
-		
+		button_logout.addClickListener(new PinkShoes(navigator,
+				Variables.LOGIN, m_username, m_userid));
+
 		// Plus Button Listener
 		button_plus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				
-				// New Date Possibilities
-				popupDateField_zeiten.add(new PopupDateField());
-				popupDateField_zeiten.lastElement().setValue(new Date());
-				popupDateField_zeiten.lastElement().setImmediate(true);
-				popupDateField_zeiten.lastElement().setTimeZone(
-						TimeZone.getTimeZone("UTC"));
-				popupDateField_zeiten.lastElement().setLocale(Locale.US);
-				popupDateField_zeiten.lastElement().setResolution(
-						Resolution.MINUTE);
-				layout.addComponent(popupDateField_zeiten.lastElement());
 
+				PopupDateField p = new PopupDateField();
+				// New Date Possibilities
+				p.setValue(new Date());
+				p.setImmediate(true);
+				p.setTimeZone(TimeZone.getTimeZone("UTC"));
+				p.setLocale(Locale.US);
+				p.setResolution(Resolution.MINUTE);
+				layout.addComponent(p);
+				popupDateField_zeiten.add(p);
+			}
+		});
+
+		// Minus Button Listener
+		button_minus.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				if (popupDateField_zeiten.size() > 1) {
+					// New Date Possibilities
+					PopupDateField p = popupDateField_zeiten
+							.elementAt(popupDateField_zeiten.size() - 1);
+
+					NewEvent.this.removeComponent(p);
+					popupDateField_zeiten.remove(p);
+				}
 			}
 		});
 
@@ -223,36 +228,41 @@ public class NewEvent extends VerticalLayout implements View {
 				String name = textfield_eventname.getValue();
 				String ort = textfield_eventort.getValue();
 
-				//fetching invited Users
-				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue(); 
-				Vector vector_invitedUsers = new Vector();
-				vector_invitedUsers.addAll(invitedUsers);
-
-				//Validation
+				// fetching invited Users TODO
+				Collection<?> invitedUsers2 = (Collection<?>) twinColSet_friends.getValue();
+				//System.out.println( "THHEHEHEHEH"+ invitedUsers.getClass().getName());
+				
+				Vector vector_invitedUsers2 = new Vector();
+				vector_invitedUsers2.addAll(invitedUsers2);
+				
+				// Validation
 				boolean valid = true;
 
 				try {
-					//validating text Fields
+					// validating text Fields
 					textfield_eventort.validate();
 					textfield_eventname.validate();
-					
+
 					// validating all the Dates
 					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
 						// checking if date lies in the past
 						Date d = popupDateField_zeiten.elementAt(i).getValue();
 						if (d.before(new Date())) {
-							popupDateField_zeiten.elementAt(i).setValidationVisible(true);
-							layout.addComponent(new Label("Please set a Future Date - Date Input Field number:"+(i+1)));
-							valid=false;
+							popupDateField_zeiten.elementAt(i)
+									.setValidationVisible(true);
+							layout.addComponent(new Label(
+									"Please set a Future Date - Date Input Field number:"
+											+ (i + 1)));
+							valid = false;
 						}
 					}
-					
-					//Checking if there is at least one User invited
-					if(vector_invitedUsers.size()==0){
-						valid =  false;
+
+					// Checking if there is at least one User invited
+					if (vector_invitedUsers2.size() == 0) {
+						valid = false;
 						layout.addComponent(new Label("Please Invite at least one User"));
 					}
-					
+
 				} catch (InvalidValueException e) {
 					valid = false;
 					layout.addComponent(new Label(e.getMessage()));
@@ -293,47 +303,29 @@ public class NewEvent extends VerticalLayout implements View {
 						}
 					}
 
-//					//Saving Invited Users
-//					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
-//						int user_nummer = ((Integer) (vector_invitedUsers.elementAt(j))) + 1;
-//
-//						// create query
-//						Query query_InvitedUser = (Query) session.getNamedQuery("getSpecificUser");
-//
-//						// setting parameters
-//						query_InvitedUser.setString("id", "" + user_nummer);
-//
-//						// run query and fetch result
-//						List<?> result_3 = query_InvitedUser.list();
-//
-//						// User
-//						User invitedUser = (User) result_3.get(0);
-//
-//						//Saving into database
-//						Eingeladen eingeladen = new Eingeladen(invitedUser, e);
-//						session.save(eingeladen);
-//					}
-					
 					t.commit();
 					session.close();
+
+					
+					// fetching invited Users
+					Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
+					
+					Vector vector_invitedUsers = new Vector();
+					vector_invitedUsers.addAll(invitedUsers);
+
+
 					
 					Session session2 = InitSession.getSession().openSession();
 					Transaction t2 = session2.beginTransaction();
 					t2.begin();
-					
-					for(int j = 0 ; j<vector_invitedUsers.size();++j){
-						//System.out.println("1 : "+j);
-						//System.out.println("2 size : "+vector_invitedUsers.size());
 
-						vector_invitedUsers.elementAt(j);
+					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
+						int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
 
-						int nummer = ((Integer) (vector_invitedUsers.elementAt(j))) /*+ 1*/;
-						//System.out.println("2 : "+nummer);
+						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);
 
-						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e); //TODO +1 neein
-						//System.out.println("4 name: "+usr.elementAt(nummer).getUsername());
-
-						//session2.save(eingeladen); //TODO einkommentieren und debuggen
+						
+						session2.save(eingeladen);
 
 					}
 
@@ -345,14 +337,11 @@ public class NewEvent extends VerticalLayout implements View {
 				}
 			}
 		});
-		
-		
 	}
-	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		
+		this.removeAllComponents();
 		m_username = event.getParameters().split("/")[0];
 		m_userid = event.getParameters().split("/")[1];
 		init();

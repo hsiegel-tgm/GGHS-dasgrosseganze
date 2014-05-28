@@ -1,4 +1,3 @@
-
 package com.example.myproject2;
 
 import java.util.List;
@@ -28,7 +27,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -40,14 +38,11 @@ import com.vaadin.data.Property.ValueChangeEvent;
  * 
  * @author Hannah Siegel
  * 
- * 2014-05-07 Hannah erstellt
+ *         2014-05-07 Hannah erstellt
  * 
  * 
- * TODO JUnit
- * TODO Komment
- * TODO Design pefekto
- * TODO GUI Test
- * TODO Coding style
+ *         TODO JUnit TODO Komment TODO Design pefekto TODO GUI Test TODO Coding
+ *         style
  * 
  * 
  * 
@@ -55,62 +50,61 @@ import com.vaadin.data.Property.ValueChangeEvent;
  * */
 public class StartPage extends VerticalLayout implements View {
 
-	private  FatNavigator navigator;
-	private String m_username,m_userid;
-	
-	
+	private FatNavigator navigator;
+	private String m_username, m_userid;
+
 	StartPage(FatNavigator nav, Master m) {
 		this.navigator = nav;
-	
 	}
-	
-	
-	void init(){
+
+	void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
+		layout.addComponent(new Label("Welcome: " + m_username));
 
-		 final Table sample = new Table("All Events");
-	     sample.setSelectable(true);
-	     sample.setMultiSelect(false);
-	     sample.setImmediate(true);
+		final Table sample = new Table("All Events");
+		sample.setSelectable(true);
+		sample.setMultiSelect(false);
+		sample.setImmediate(true);
 
-	     sample.setColumnReorderingAllowed(true);
-	     sample.setColumnCollapsingAllowed(true);
+		sample.setColumnReorderingAllowed(true);
+		sample.setColumnCollapsingAllowed(true);
 
-	     sample.addContainerProperty("Event ID", Integer.class,  null);
-	     sample.addContainerProperty("Event Name", String.class,  null);
-	     sample.addContainerProperty("Location", String.class, null);
-	     sample.addContainerProperty("Admin", String.class, null);
+		sample.addContainerProperty("Event ID", Integer.class, null);
+		sample.addContainerProperty("Event Name", String.class, null);
+		sample.addContainerProperty("Location", String.class, null);
+		sample.addContainerProperty("Admin", String.class, null);
 
-	     Session session = InitSession.getSession().openSession();
-			Transaction t = session.beginTransaction();
-			t.begin();
-	     
-			// create query
-			Query q = (Query) session.getNamedQuery("getEvents");
-			
-			// run query and fetch result
-			List<?> res = q.list();
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
 
-			for(int i = 0 ; i<res.size();++i){
-				DoodleEvent e = (DoodleEvent) res.get(i);
-				
-				sample.addItem(new Object[] {
-			    		    (int)(e.getID().longValue()),e.getName(),e.getOrt(),e.getAdmin().getUsername()}, new Integer(i));
-				
-			}
-	
-		layout.addComponent(sample);	
-	
+		// create query
+		Query q = (Query) session.getNamedQuery("getEvents");
+
+		// run query and fetch result
+		List<?> res = q.list();
+
+		for (int i = 0; i < res.size(); ++i) {
+			DoodleEvent e = (DoodleEvent) res.get(i);
+
+			sample.addItem(
+					new Object[] { (int) (e.getID().longValue()), e.getName(),
+							e.getOrt(), e.getAdmin().getUsername() },
+					new Integer(i));
+
+		}
+
+		layout.addComponent(sample);
+
 		sample.addValueChangeListener(new Property.ValueChangeListener() {
-		    public void valueChange(ValueChangeEvent event) {
-		        Notification.show("Selected: " + sample.getValue());
-		        navigator.navigateTo(Variables.VOTE+"/"+m_username+"/");
-		    }
+			public void valueChange(ValueChangeEvent event) {
+				Notification.show("Selected: " + sample.getValue());
+				navigator.navigateTo(Variables.VOTE+"/"+m_username+"/"+m_userid);
+			}
 		});
-		
-		
-		//LogOut Button
+
+		// LogOut Button
 		Button button_LogOut = new Button("Log Out");
 		button_LogOut.addClickListener(new Button.ClickListener() {
 			@Override
@@ -118,33 +112,31 @@ public class StartPage extends VerticalLayout implements View {
 				navigator.navigateTo(Variables.LOGIN);
 			}
 		});
-		
-		//newEvent Button
-		Button button_newEvent= new Button("New Event");
+
+		// newEvent Button
+		Button button_newEvent = new Button("New Event");
 		button_newEvent.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo(Variables.NEWEVENT+"/"+m_username+"/");
+				navigator.navigateTo(Variables.NEWEVENT + "/" + m_username+ "/" + m_userid);
 			}
 		});
-		
-		//adding buttons
-		layout.addComponent(button_newEvent);	
-		layout.addComponent(button_LogOut);	
 
-		
-		layout.addComponent(new Label("username: " + m_username));
+		// adding buttons
+		layout.addComponent(button_newEvent);
+		layout.addComponent(button_LogOut);
 
-//		
-//        //testing..
-//		String s;
-//		try {
-//		    VaadinSession.getCurrent().getLockInstance().lock();
-//		    s = (String) VaadinSession.getCurrent().getAttribute(Variables.USERNAME);
-//		} finally {
-//		    VaadinSession.getCurrent().getLockInstance().unlock();
-//		}
-		
+		//
+		// //testing..
+		// String s;
+		// try {
+		// VaadinSession.getCurrent().getLockInstance().lock();
+		// s = (String)
+		// VaadinSession.getCurrent().getAttribute(Variables.USERNAME);
+		// } finally {
+		// VaadinSession.getCurrent().getLockInstance().unlock();
+		// }
+
 	}
 
 	@Override
@@ -155,6 +147,3 @@ public class StartPage extends VerticalLayout implements View {
 		init();
 	}
 }
-
-
-

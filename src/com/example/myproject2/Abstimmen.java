@@ -53,14 +53,17 @@ import com.vaadin.data.Property.ValueChangeEvent;
 public class Abstimmen extends VerticalLayout implements View {
 
 	private  FatNavigator navigator;
-	private Master master;
-	
-	private int user_id=5;
+	private String m_username, m_userid;
+
 	private Long event_id=17L;
 	
 	protected  Abstimmen(FatNavigator nav, Master m) {
-		this.master=m;
 		this.navigator = nav;
+	
+	}
+
+	
+	void init(){
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 		
@@ -162,7 +165,7 @@ public class Abstimmen extends VerticalLayout implements View {
 		button_newEvent.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo(Variables.NEWEVENT);
+				navigator.navigateTo(Variables.STARTPAGE + "/" + m_username+ "/" + m_userid);
 			}
 		});
 		
@@ -179,11 +182,16 @@ public class Abstimmen extends VerticalLayout implements View {
 //		} finally {
 //		    VaadinSession.getCurrent().getLockInstance().unlock();
 //		}
+		
+		
 	}
-
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		this.removeAllComponents();
+		m_username = event.getParameters().split("/")[0];
+		m_userid = event.getParameters().split("/")[1];
+		init();
 	}
 }
 
