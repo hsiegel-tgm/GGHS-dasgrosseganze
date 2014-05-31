@@ -22,6 +22,10 @@ public class Variables {
 	public static final String GETALLEVENTS = "getEvents";
 	public static final String GETEVENT_BYID = "getSpecificEvent";
 	public static final String GETEVENT_BYADMIN = "getAdminsEvent";
+	public static final String GETABGESTIMMT_BYUSER = "getAbgestimmtfromspecificUser";
+	public static final String GETABGESTIMMT = "getAbgestimmt";
+	public static final String GETWERTUNG = "getWertung";
+
 //	public static final String GETALLEVENTS = "getEvents";
 //	public static final String GETALLEVENTS = "getEvents";
 //	public static final String GETALLEVENTS = "getEvents";

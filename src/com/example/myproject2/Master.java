@@ -48,7 +48,6 @@ public class Master extends UI {
 		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
 		navigator.addView(Variables.VOTE,new EventAnzeigen(navigator,this));
-
 	}
 	
 	/**

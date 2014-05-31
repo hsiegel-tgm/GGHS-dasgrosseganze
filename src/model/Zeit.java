@@ -71,7 +71,9 @@ public class Zeit {
 		this.ende = ende;
 		this.event = event;
 	}
-	
+	public Long getID(){
+		return this.ID;
+	}
 	public Zeit(){}
 	
 }

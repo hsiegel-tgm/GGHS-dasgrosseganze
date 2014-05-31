@@ -29,7 +29,7 @@ public class Eingeladen {
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private DoodleEvent event;	
 	
-	private boolean hat_abgestimmt;
+	private boolean hat_abgestimmt; //TODO inkonsistent
 
 	
 	public Eingeladen(User user, DoodleEvent event) {

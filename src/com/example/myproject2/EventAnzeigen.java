@@ -37,14 +37,9 @@ import com.vaadin.ui.Layout;
 import com.vaadin.data.Property.ValueChangeEvent;
 
 /**
- * 
  * @author Hannah Siegel
  * 
  *         2014-05-07 Hannah erstellt
- * 
- * 
- *         TODO JUnit TODO Komment TODO Design pefekto TODO GUI Test TODO Coding
- *         style
  * 
  * */
 public class EventAnzeigen extends VerticalLayout implements View {
@@ -81,33 +76,47 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		}
 
 		checkboxes = new Vector<CheckBox>();		
+		Object[] o2 = new Object[m_times.size()+1];
 
 		int inc = 1;
 		for (Eingeladen e : m_eingeladene) {
 			if(e.getUser().getUsername().equals(m_username)){
-				Object[] o = new Object[m_times.size()+1];
-				o[0]=m_username;
+
+				//Object[] o = new Object[m_times.size()+1];
+				o2[0]=m_username;
 				int looper=1;
 				for (Zeit z : m_times) {
 					CheckBox cbx = new CheckBox("", false);
 					checkboxes.add(cbx);
-					o[looper]=cbx;
+					o2[looper]=cbx;
 					looper++;
 				}
-				table.addItem(o,inc);
+//				table.addItem(o,inc);
 				//loop durch zeiten
 			}
 			else{
-				CheckBox cbx2 = new CheckBox("", true);
-				CheckBox cbx3 = new CheckBox("", false);
-				cbx2.setEnabled(false);
-				cbx3.setEnabled(false);
+				User u = e.getUser();
+				Object[]o=new Object [m_times.size()+1];
+				int i = 1;
+				o[0]=e.getUser().getUsername();
+				for (Zeit z : m_times) {
+					Boolean wertung = QueryHelper.getWertung(u.getID().longValue()+"", z.getID().longValue()+"");
+					if(wertung!=null){
+						CheckBox cbx2 = new CheckBox("", wertung );
+						cbx2.setEnabled(false);
+						o[i]=cbx2;
+					}
+					++i;
+				}
+				if(o[1]!=null)
+					table.addItem(o,inc);
+				//table.addItem(new Object[] {e.getUser().getUsername(),cbx2,cbx3,cbx4},inc);
 
-				table.addItem(new Object[] {e.getUser().getUsername(),cbx2,cbx3},inc);
 			}
 			++inc;
 		}
-		
+		table.addItem(o2,inc);
+
 		layout.addComponent(table);
 
 		// Printing Eventname
@@ -152,7 +161,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		
 		m_times = QueryHelper.executeId("getTimePossibilitesforSpecificEvent",  m_event.getID()+"");
 		
-		m_eingeladene =  QueryHelper.executeId("getEingeladenforSpecificEvent",  m_eventque);		
+		m_eingeladene = QueryHelper.executeId("getEingeladenforSpecificEvent",  m_eventque);		
 	}
 	
 	public void addingButtons(VerticalLayout layout) {

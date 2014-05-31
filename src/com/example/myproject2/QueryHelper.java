@@ -33,4 +33,27 @@ public class QueryHelper {
 		session.close();
 		return res;
 	}
+	
+	public static Boolean getWertung(String userID, String zeitID){
+		//Fetching usernames
+		boolean b = false;
+		try{
+		Session session =  InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session.getNamedQuery(Variables.GETWERTUNG);
+		q2.setParameter("userid", Long.parseLong(userID));
+		q2.setParameter("zeitid", Long.parseLong(zeitID));
+
+		List<Boolean> res = q2.list();
+		b = res.get(0);
+		t.commit();
+		session.close();
+		}
+		catch(Exception e){
+			System.out.println("no value"); //TODO now it returns false..
+			return null;
+		}
+		return b;
+	}
 }
