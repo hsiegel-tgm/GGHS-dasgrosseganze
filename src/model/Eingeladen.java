@@ -6,18 +6,25 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
+
+
+@NamedQueries({
+	@NamedQuery(name="getEingeladenforSpecificEvent",query="FROM Eingeladen ein WHERE ein.event.ID = :id"),
+})
 @Entity
 public class Eingeladen {
 	@Id
 	@GeneratedValue
 	private Long ID;
 	
-	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private User user;
 	
-	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private DoodleEvent event;	
 	
 	public Eingeladen(User user, DoodleEvent event) {
@@ -42,6 +49,6 @@ public class Eingeladen {
 		this.event = event;
 	}
 	
-	
+	public Eingeladen(){}
 	
 }

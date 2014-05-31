@@ -102,7 +102,6 @@ public class StartPage extends VerticalLayout implements View {
 		final List<Long> list1 = new ArrayList<Long>();
 		final List<Long> list2 = new ArrayList<Long>();
 
-		
 		for (int i = 0; i < res.size(); ++i) {
 			DoodleEvent e = (DoodleEvent) res.get(i);
 			
@@ -153,8 +152,8 @@ public class StartPage extends VerticalLayout implements View {
 		Button button_NewEvent = new Button("New Event");
 		button_NewEvent.addClickListener(new PinkShoes(navigator,Variables.NEWEVENT,m_username,m_userid));
 			
-				// adding buttons
-				layout.addComponent(button_NewEvent);
+		// adding buttons
+		layout.addComponent(button_NewEvent);
 		
 		
 		// LogOut Button

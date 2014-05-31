@@ -121,11 +121,8 @@ public class LogIn extends VerticalLayout implements View {
 				//Fetching value
 				String inputUsername = textfield_user.getValue();
 
-				//Fetching usernames
-				Session session =  InitSession.getSession().openSession();
-				List<?> res = session.getNamedQuery("getUsers").list();
-				session.close();
-
+				List<?> res = QueryHelper.executeBasic("getUsers");
+				
 				//checking if username is known
 				boolean b = true;
 				for (int i = 0; i < res.size(); ++i) {

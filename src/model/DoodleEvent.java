@@ -38,7 +38,7 @@ public class DoodleEvent {
 	private String ort;
 	
 	//@OneToOne(optional=false)
-	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private User user;
 	
 	private Date fixDatum;
