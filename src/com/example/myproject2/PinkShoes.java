@@ -36,4 +36,7 @@ public class PinkShoes implements Button.ClickListener,Property.ValueChangeListe
 
 		
 	}
+	public void navigation(){
+		m_navigator.navigateTo(m_direction+m_parameter);
+	}
 }

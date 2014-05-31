@@ -9,6 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import model.Abgestimmt;
 import model.DoodleEvent;
 import model.Eingeladen;
 import model.User;
@@ -46,6 +47,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 
 	private FatNavigator m_navigator;
 	private String m_username, m_userid, m_eventque;
+	private User user;
 	private boolean m_isadmin;
 	private Vector<CheckBox> checkboxes;
 	private DoodleEvent m_event;
@@ -81,7 +83,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		int inc = 1;
 		for (Eingeladen e : m_eingeladene) {
 			if(e.getUser().getUsername().equals(m_username)){
-
+				user = e.getUser();
 				//Object[] o = new Object[m_times.size()+1];
 				o2[0]=m_username;
 				int looper=1;
@@ -91,7 +93,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					o2[looper]=cbx;
 					looper++;
 				}
-//				table.addItem(o,inc);
+				//table.addItem(o,inc);
 				//loop durch zeiten
 			}
 			else{
@@ -110,8 +112,6 @@ public class EventAnzeigen extends VerticalLayout implements View {
 				}
 				if(o[1]!=null)
 					table.addItem(o,inc);
-				//table.addItem(new Object[] {e.getUser().getUsername(),cbx2,cbx3,cbx4},inc);
-
 			}
 			++inc;
 		}
@@ -173,9 +173,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		// back Button
 		Button button_back = new Button("Back");
 		button_back.addClickListener(new PinkShoes(m_navigator,
-				Variables.STARTPAGE, m_username, m_userid));
-
-	
+			Variables.STARTPAGE, m_username, m_userid));
 		
 		// LogOut Button
 		Button button_save = new Button("Save");
@@ -193,20 +191,13 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	}
 	
 	public void save(){
-		if(checkboxes.elementAt(0).getValue()){
-			this.addComponent(new Label("1: true"));
-
-		}else{
-			this.addComponent(new Label("1: false"));
-
+		int inc=0;
+		for(Zeit z : m_times){
+			Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
+			QueryHelper.saveObject(a);
+			++inc;
 		}
-		if(checkboxes.elementAt(1).getValue()){
-			this.addComponent(new Label("2: true"));
-
-		}else{
-			this.addComponent(new Label("2: false"));
-
-		}
+		this.addComponent(new Label("saved your choices.."));
 	}
 	
 	//IoC Prinzip
