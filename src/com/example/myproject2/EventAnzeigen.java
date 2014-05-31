@@ -146,7 +146,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	}
 	
 	public void executeQuerys(){
-		List<?> l = QueryHelper.executeId("getSpecificEvent", m_eventque);
+		List<?> l = QueryHelper.executeId(Variables.GETEVENT_BYID, m_eventque);
 		
 		m_event = (DoodleEvent) l.get(0);
 		
@@ -177,12 +177,12 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			}
 		});
 		
-		layout.addComponent(button_save);
 		// adding buttons
+		layout.addComponent(button_save);
 		layout.addComponent(button_back);
 		layout.addComponent(button_LogOut);
-		
 	}
+	
 	public void save(){
 		if(checkboxes.elementAt(0).getValue()){
 			this.addComponent(new Label("1: true"));
@@ -198,8 +198,9 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			this.addComponent(new Label("2: false"));
 
 		}
-
 	}
+	
+	//IoC Prinzip
 	@Override
 	public void enter(ViewChangeEvent event) {
 		this.removeAllComponents();

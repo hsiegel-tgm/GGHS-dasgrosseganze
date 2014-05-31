@@ -14,7 +14,9 @@ import javax.persistence.OneToOne;
 
 @NamedQueries({
 	@NamedQuery(name="getEingeladenforSpecificEvent",query="FROM Eingeladen ein WHERE ein.event.ID = :id"),
+	@NamedQuery(name="getEingeladenforSpecificUser",query="SELECT ein.event FROM Eingeladen ein WHERE ein.user.ID = :id"),
 })
+
 @Entity
 public class Eingeladen {
 	@Id
@@ -27,10 +29,14 @@ public class Eingeladen {
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private DoodleEvent event;	
 	
+	private boolean hat_abgestimmt;
+
+	
 	public Eingeladen(User user, DoodleEvent event) {
 		super();
 		this.user = user;
 		this.event = event;
+		this.hat_abgestimmt=false;
 	}
 
 	public User getUser() {
@@ -47,6 +53,13 @@ public class Eingeladen {
 
 	public void setEvent(DoodleEvent event) {
 		this.event = event;
+	}
+	
+	public boolean getAbgestimmt(){
+		return hat_abgestimmt;
+	}
+	public void setAbgestimmt(boolean b){
+		this.hat_abgestimmt=b;
 	}
 	
 	public Eingeladen(){}

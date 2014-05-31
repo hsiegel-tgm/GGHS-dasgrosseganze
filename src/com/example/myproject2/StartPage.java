@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import model.DoodleEvent;
+import model.Eingeladen;
 import model.User;
 
 import com.vaadin.annotations.Theme;
@@ -52,49 +53,46 @@ public class StartPage extends VerticalLayout implements View {
 
 	private FatNavigator navigator;
 	private String m_username, m_userid;
+	private Table m_myevents, m_invitedEvents2;
+	private List<DoodleEvent> m_events; // ueberfluessig? haha admin?
+	private List<DoodleEvent> m_invitedTo;
 
 	StartPage(FatNavigator nav, Master m) {
 		this.navigator = nav;
 	}
 
-	void init() {
+	public void initializingTables() {
+		// myevents
+		m_myevents = new Table("Your Events");
+		m_myevents.setSelectable(true);
+		m_myevents.setMultiSelect(false);
+		m_myevents.setImmediate(true);
+		m_myevents.setColumnReorderingAllowed(true);
+		m_myevents.setColumnCollapsingAllowed(true);
+		m_myevents.addContainerProperty("Event ID", Integer.class, null);
+		m_myevents.addContainerProperty("Event Name", String.class, null);
+		m_myevents.addContainerProperty("Location", String.class, null);
+
+		// invited events
+		m_invitedEvents2 = new Table("All Events");
+		m_invitedEvents2.setSelectable(true);
+		m_invitedEvents2.setMultiSelect(false);
+		m_invitedEvents2.setImmediate(true);
+		m_invitedEvents2.setColumnReorderingAllowed(true);
+		m_invitedEvents2.setColumnCollapsingAllowed(true);
+		m_invitedEvents2.addContainerProperty("Event ID", Integer.class, null);
+		m_invitedEvents2.addContainerProperty("Event Name", String.class, null);
+		m_invitedEvents2.addContainerProperty("Location", String.class, null);
+		m_invitedEvents2.addContainerProperty("Admin", String.class, null);
+
+	}
+
+	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 		layout.addComponent(new Label("Welcome: " + m_username));
 
-		//myevents
-		final Table myevents = new Table("Your Events");
-		myevents.setSelectable(true);
-		myevents.setMultiSelect(false);
-		myevents.setImmediate(true);
-		myevents.setColumnReorderingAllowed(true);
-		myevents.setColumnCollapsingAllowed(true);
-		myevents.addContainerProperty("Event ID", Integer.class, null);
-		myevents.addContainerProperty("Event Name", String.class, null);
-		myevents.addContainerProperty("Location", String.class, null);
-
-		//invited events
-		final Table invitedEvents2 = new Table("All Events");
-		invitedEvents2.setSelectable(true);
-		invitedEvents2.setMultiSelect(false);
-		invitedEvents2.setImmediate(true);
-		invitedEvents2.setColumnReorderingAllowed(true);
-		invitedEvents2.setColumnCollapsingAllowed(true);
-		invitedEvents2.addContainerProperty("Event ID", Integer.class, null);
-		invitedEvents2.addContainerProperty("Event Name", String.class, null);
-		invitedEvents2.addContainerProperty("Location", String.class, null);
-		invitedEvents2.addContainerProperty("Admin", String.class, null);
-		
-		
-		Session session = InitSession.getSession().openSession();
-		Transaction t = session.beginTransaction();
-		t.begin();
-
-		// create query
-		Query q = (Query) session.getNamedQuery("getEvents");
-
-		// run query and fetch result
-		List<?> res = q.list();
+		initializingTables();
 
 		int isadminzv = 0;
 		int isinvited = 0;
@@ -102,68 +100,70 @@ public class StartPage extends VerticalLayout implements View {
 		final List<Long> list1 = new ArrayList<Long>();
 		final List<Long> list2 = new ArrayList<Long>();
 
-		for (int i = 0; i < res.size(); ++i) {
-			DoodleEvent e = (DoodleEvent) res.get(i);
-			
-			String admin = e.getAdmin().getUsername();
-			
-			if(m_username.equals(admin)){
-				myevents.addItem(
-						new Object[] { (int) (e.getID().longValue()), e.getName(),
-								e.getOrt() },
-						new Integer(isadminzv));
-				isadminzv++;
-				list1.add(e.getID());
-			}
-			else{
-				//TODO check if user is invited..
-				invitedEvents2.addItem(
-						new Object[] { (int) (e.getID().longValue()), e.getName(),
-								e.getOrt(), e.getAdmin().getUsername() },
-						new Integer(isinvited));
-				isinvited++;
-				list2.add(e.getID());
-
-			}
+		for (DoodleEvent ev : m_events) {
+			m_myevents.addItem(new Object[] { (int) (ev.getID().longValue()),
+					ev.getName(), ev.getOrt() }, new Integer(isadminzv));
+			isadminzv++;
+			list1.add(ev.getID());
 		}
-		
-		t.commit();
-		session.close();
-		
-		layout.addComponent(myevents);
-		layout.addComponent(invitedEvents2);
-		
-		myevents.addValueChangeListener(new Property.ValueChangeListener() {
+
+		for (DoodleEvent ev : m_invitedTo) {
+			m_invitedEvents2.addItem(
+					new Object[] { (int) (ev.getID().longValue()),
+							ev.getName(), ev.getOrt(),
+							ev.getAdmin().getUsername() }, new Integer(
+							isinvited));
+			isinvited++;
+			list2.add(ev.getID());
+		}
+
+		layout.addComponent(m_myevents);
+		layout.addComponent(m_invitedEvents2);
+
+		m_myevents.addValueChangeListener(new Property.ValueChangeListener() {
 			public void valueChange(ValueChangeEvent event) {
-				Long eventid = list1.get((Integer) myevents.getValue());		
-				navigator.navigateTo(Variables.VOTE+"/"+m_username+"/"+m_userid+"/"+eventid+"/admin");
-			}
-		});
-		
-		invitedEvents2.addValueChangeListener(new Property.ValueChangeListener() {
-			public void valueChange(ValueChangeEvent event) {
-				Long eventid = list2.get((Integer) invitedEvents2.getValue());		
-				navigator.navigateTo(Variables.VOTE+"/"+m_username+"/"+m_userid+"/"+eventid+"/invited");
+				Long eventid = list1.get((Integer) m_myevents.getValue());
+				navigator.navigateTo(Variables.VOTE + "/" + m_username + "/"
+						+ m_userid + "/" + eventid + "/admin");
 			}
 		});
 
-		
+		m_invitedEvents2
+				.addValueChangeListener(new Property.ValueChangeListener() {
+					public void valueChange(ValueChangeEvent event) {
+						Long eventid = list2.get((Integer) m_invitedEvents2
+								.getValue());
+						navigator.navigateTo(Variables.VOTE + "/" + m_username
+								+ "/" + m_userid + "/" + eventid + "/invited");
+					}
+				});
+
+		addingButtons();
+	}
+
+	public void addingButtons() {
 		// LogOut Button
 		Button button_NewEvent = new Button("New Event");
-		button_NewEvent.addClickListener(new PinkShoes(navigator,Variables.NEWEVENT,m_username,m_userid));
-			
+		button_NewEvent.addClickListener(new PinkShoes(navigator,
+				Variables.NEWEVENT, m_username, m_userid));
+
 		// adding buttons
-		layout.addComponent(button_NewEvent);
-		
-		
+		this.addComponent(button_NewEvent);
+
 		// LogOut Button
 		Button button_LogOut = new Button("Log Out");
-		button_LogOut.addClickListener(new PinkShoes(navigator,
-				Variables.LOGIN));
-	
-		// adding buttons
-		layout.addComponent(button_LogOut);
+		button_LogOut
+				.addClickListener(new PinkShoes(navigator, Variables.LOGIN));
 
+		// adding buttons
+		this.addComponent(button_LogOut);
+	}
+
+	public void executeQuerys() {
+		m_events = QueryHelper.executeId(Variables.GETEVENT_BYADMIN, m_userid);
+
+		m_invitedTo = QueryHelper.executeId("getEingeladenforSpecificUser",
+				m_userid);
 	}
 
 	@Override
@@ -171,6 +171,7 @@ public class StartPage extends VerticalLayout implements View {
 		this.removeAllComponents();
 		m_username = event.getParameters().split("/")[0];
 		m_userid = event.getParameters().split("/")[1];
+		executeQuerys();
 		init();
 	}
 }

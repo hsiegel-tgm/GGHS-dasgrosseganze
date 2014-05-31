@@ -87,7 +87,7 @@ public class LogIn extends VerticalLayout implements View {
 	 * @param nav
 	 * @param m
 	 */
-	public  LogIn( FatNavigator nav, Master m) {
+	public  LogIn(FatNavigator nav, Master m) {
 		this.navigator=nav;
 		
 		final VerticalLayout layout =this;

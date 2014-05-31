@@ -14,13 +14,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
-
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.example.myproject2.Variables;
+
+
 @NamedQueries({
-	@NamedQuery(name="getEvents",query="FROM DoodleEvent"), 
-	@NamedQuery(name="getSpecificEvent",query="FROM DoodleEvent d WHERE  d.ID = :id"),
+	@NamedQuery(name=Variables.GETALLEVENTS,query="FROM DoodleEvent"), 
+	@NamedQuery(name=Variables.GETEVENT_BYID,query="FROM DoodleEvent d WHERE  d.ID = :id"),
+	@NamedQuery(name=Variables.GETEVENT_BYADMIN,query="FROM DoodleEvent e WHERE  e.user.ID = :id"),
+
 })
 //TODO where user id =  user session
 
@@ -28,6 +32,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="event")
 public class DoodleEvent {
+		
 	@Id
 	@GeneratedValue
 	private Long ID;
