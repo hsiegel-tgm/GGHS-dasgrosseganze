@@ -1,8 +1,11 @@
 package model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -16,7 +19,6 @@ import com.example.myproject2.Variables;
 	@NamedQuery(name=Variables.GETABGESTIMMT_BYUSER,query="FROM Abgestimmt a WHERE a.user.ID = :id"),
 	@NamedQuery(name=Variables.GETABGESTIMMT,query="FROM Abgestimmt a"),
 	@NamedQuery(name=Variables.GETWERTUNG,query="SELECT a.wertung FROM Abgestimmt a WHERE a.user.ID = :userid AND a.zeit.ID = :zeitid"),
-
 })
 
 @Entity
@@ -26,10 +28,10 @@ public class Abgestimmt {
 	@GeneratedValue
 	private Long ID;
 	
-	@OneToOne(optional=false)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private User user;
 	
-	@OneToOne(optional=false)
+	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private Zeit zeit;
 	
 	private boolean wertung;

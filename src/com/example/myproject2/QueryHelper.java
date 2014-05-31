@@ -2,6 +2,7 @@ package com.example.myproject2;
 
 import java.util.List;
 
+import model.Abgestimmt;
 import model.User;
 
 import org.hibernate.Query;
@@ -35,7 +36,6 @@ public class QueryHelper {
 	}
 	
 	public static Boolean getWertung(String userID, String zeitID){
-		//Fetching usernames
 		boolean b = false;
 		try{
 		Session session =  InitSession.getSession().openSession();
@@ -51,18 +51,26 @@ public class QueryHelper {
 		session.close();
 		}
 		catch(Exception e){
-			System.out.println("no value"); //TODO now it returns false..
+			System.out.println("no value");
 			return null;
 		}
 		return b;
 	}
 	
 	public static void saveObject(Object o){
-		Session session =  InitSession.getSession().openSession();
-		Transaction t = session.beginTransaction();
-		t.begin();
-		session.save(o);
-		t.commit();
-		session.close();
+		Abgestimmt a = (Abgestimmt) o;
+		Boolean wertung = QueryHelper.getWertung(a.getUser().getID().longValue()+"", a.getZeit().getID().longValue()+"");
+		if(wertung == null){
+			Session session =  InitSession.getSession().openSession();
+			Transaction t = session.beginTransaction();
+			t.begin();
+			session.save(o);
+			t.commit();
+			session.close();
+		}
+		else{
+			System.out.println("gibts schon in der Db");
+		}
+	
 	}
 }

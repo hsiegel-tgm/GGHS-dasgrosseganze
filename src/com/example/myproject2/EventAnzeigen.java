@@ -51,7 +51,6 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	private boolean m_isadmin;
 	private Vector<CheckBox> checkboxes;
 	private DoodleEvent m_event;
-
 	private List<Zeit> m_times;
 	private List<Eingeladen> m_eingeladene;
 
@@ -64,12 +63,13 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		layout.setMargin(true);
 
 		layout.addComponent(new Label("Event: " + m_event.getName()));
-		
+		layout.addComponent(new Label("Ort: " + m_event.getOrt()));
+
 		// TABELLE
 		final Table table = new Table("Vote for Event number " + m_eventque);
 		table.setSelectable(false);
 		table.setColumnReorderingAllowed(true);
-		table.setColumnCollapsingAllowed(true);
+		//table.setColumnCollapsingAllowed(true);
 
 		table.addContainerProperty("User", String.class, null);
 		
@@ -84,11 +84,13 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		for (Eingeladen e : m_eingeladene) {
 			if(e.getUser().getUsername().equals(m_username)){
 				user = e.getUser();
-				//Object[] o = new Object[m_times.size()+1];
 				o2[0]=m_username;
 				int looper=1;
 				for (Zeit z : m_times) {
-					CheckBox cbx = new CheckBox("", false);
+					Boolean wertung = QueryHelper.getWertung(user.getID().longValue()+"", z.getID().longValue()+"");
+					if(wertung==null)
+						wertung = false;
+					CheckBox cbx = new CheckBox("", wertung);
 					checkboxes.add(cbx);
 					o2[looper]=cbx;
 					looper++;
@@ -121,6 +123,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 
 		// Printing Eventname
 
+		//TODO schlecht..
 		if (m_isadmin) {
 			// D Button
 			Button button_delete = new Button("Delete This Event");
@@ -134,11 +137,15 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					Transaction t = session.beginTransaction();
 					t.begin();
 
+					for (Eingeladen ein : m_eingeladene) {
+						session.delete(ein);
+					}
+					
 					for (Zeit z : m_times) {
 						session.delete(z);
 					}
 
-					//session.delete(e);
+					//session.delete(m_event); TODO
 
 					t.commit();
 					session.close();
@@ -147,9 +154,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 							+ "/" + m_userid);
 				}
 			});
-
 		}
-
 	
 		addingButtons(layout);
 	}
@@ -210,6 +215,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		String s = event.getParameters().split("/")[3];
 		if (s.equals("admin"))
 			m_isadmin = true;
+		//System.out.println("admin: ... "+m_isadmin);
 		executeQuerys();
 		init();
 	}
