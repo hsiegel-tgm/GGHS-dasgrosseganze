@@ -26,6 +26,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.data.Item;
@@ -56,7 +57,7 @@ public class StartPage extends VerticalLayout implements View {
 	private Table m_myevents, m_invitedEvents2;
 	private List<DoodleEvent> m_events; // ueberfluessig? haha admin?
 	private List<DoodleEvent> m_invitedTo;
-
+private TextField m_usersearch;
 	StartPage(FatNavigator nav, Master m) {
 		this.navigator = nav;
 	}
@@ -157,6 +158,30 @@ public class StartPage extends VerticalLayout implements View {
 
 		// adding buttons
 		this.addComponent(button_LogOut);
+		
+		search();
+	}
+	
+	public void search(){
+		Button button_search = new Button("Search");
+		m_usersearch = new TextField();
+
+		button_search.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				System.out.println("clickked");
+				String text = m_usersearch.getValue();
+				System.out.println("text:"+text);
+				if(!text.equals("")){
+					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,text).navigation();
+				}
+				else{
+					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,"_").navigation();
+				}
+			}
+		});
+		
+		this.addComponent(m_usersearch);
+		this.addComponent(button_search);
 	}
 
 	public void executeQuerys() {

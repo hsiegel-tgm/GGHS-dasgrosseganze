@@ -17,6 +17,8 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.example.myproject2.Variables;
+
 /*
  * 
  * 2014-05-07 Hannah erstellt
@@ -34,7 +36,8 @@ import org.hibernate.validator.constraints.Email;
 //Named Query 
 @NamedQueries({
 	@NamedQuery(name="getUsers",query="FROM User u order by u.ID"),
-	@NamedQuery(name="getSpecificUser,query="FROM User u WHERE  u.ID = :id"),
+	@NamedQuery(name=Variables.GETUSER_BYID,query="FROM User u WHERE  u.ID = :id"),
+	@NamedQuery(name=Variables.GETUSER_BYNAME,query="FROM User u WHERE  u.username like :id"),
 
 })
 
@@ -69,6 +72,7 @@ public class User {
 	}
 
 	public User(String username, String email){
+		//TODO weg?
 		if(username != null  && username != ""){
 			this.username=username;
 		}else{

@@ -28,7 +28,6 @@ import com.vaadin.ui.UI;
 @SessionScoped
 public class Master extends UI {
 	private FatNavigator navigator;
-	private static String username;
 	
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = Master.class)
@@ -49,24 +48,7 @@ public class Master extends UI {
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
 		navigator.addView(Variables.VOTE,new EventAnzeigen(navigator,this));
 		navigator.addView(Variables.COMMENT,new NewComment(navigator));
+		navigator.addView(Variables.SHOWQUERYRESULT,new ShowQueryResult(navigator));
 
-	}
-	
-	/**
-	 * setter for the username
-	 * 
-	 * @param username
-	 */
-	public void setUsername(String username){
-		this.username=username;
-	}
-	
-	/**
-	 * getter for the username
-	 * 
-	 * @return username
-	 */
-	public String getUsername(){
-		return this.username;
 	}
 }

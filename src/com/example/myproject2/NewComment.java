@@ -65,6 +65,8 @@ import org.hibernate.cfg.AnnotationConfiguration;
  *         TODO moeglich password email mit password
  * 
  * 
+ * TODO hearst nein nein also der admin kann nicht posten? wtf
+ * 
  * */
 public class NewComment extends VerticalLayout implements View {
 	// Textfields
@@ -117,6 +119,8 @@ public class NewComment extends VerticalLayout implements View {
 				}else{
 					// new User object
 					Kommentar k = new Kommentar(m_event, text, new Date(), m_user); 
+					System.out.println("try saving...");
+
 					if(QueryHelper.saveObject(k)){
 						// Notification
 						Notification.show("Saved...");
@@ -125,6 +129,7 @@ public class NewComment extends VerticalLayout implements View {
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 						}
+						System.out.println("navigation");
 						new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin).navigation();
 
 					}
@@ -151,7 +156,9 @@ public class NewComment extends VerticalLayout implements View {
 		
 		m_event = (DoodleEvent) l.get(0);
 		
-		m_user = (User) QueryHelper.executeId(Variables.GETUSER_BYID,  m_userid).get(0);		
+		m_user = (User) QueryHelper.executeId(Variables.GETUSER_BYID,  m_userid).get(0);	
+		
+		System.out.println("event:"+m_event.getName()+" user: "+m_user.getUsername());
 	}
 	
 	@Override

@@ -37,6 +37,18 @@ public class QueryHelper {
 		session.close();
 		return res;
 	}
+	public static List executeLike(String queryname, String id) {
+		// Fetching usernames
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session.getNamedQuery(queryname);
+		q2.setParameter("id", id+"%");
+		List<?> res = q2.list();
+		t.commit();
+		session.close();
+		return res;
+	}
 
 	public static Boolean getWertung(String userID, String zeitID) {
 		boolean b = false;
@@ -79,22 +91,26 @@ public class QueryHelper {
 
 	public static boolean saveObject(Object o) {
 		boolean b = true;
-		try{
+	//	try{
 			Session session = InitSession.getSession().openSession();
 			Transaction t = session.beginTransaction();
 			t.begin();
 			session.save(o);
 			t.commit();
 			session.close();
-		}
-		catch(Throwable t){
-			//TODO na so geht des ned
-			if(t instanceof MySQLIntegrityConstraintViolationException){
-				//MySQLIntegrityConstraintViolationException e = (MySQLIntegrityConstraintViolationException) t;
-				Notification.show("Username already extists",Notification.TYPE_ERROR_MESSAGE);
-				b = false;
-			}
-		}
+			System.out.println("super");
+
+//		}
+//		catch(Throwable t){
+//			System.out.println("shiiiiiiiiiiit");
+//
+//			//TODO na so geht des ned
+//			if(t instanceof MySQLIntegrityConstraintViolationException){
+//				//MySQLIntegrityConstraintViolationException e = (MySQLIntegrityConstraintViolationException) t;
+//				Notification.show("Username already extists",Notification.TYPE_ERROR_MESSAGE);
+//				b = false;
+//			}
+//		}
 		return b;
 	}
 }
