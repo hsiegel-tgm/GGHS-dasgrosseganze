@@ -110,7 +110,6 @@ public class NewEvent extends VerticalLayout implements View {
 		// Eventort
 		textfield_eventort = new TextField();
 		// textfield_eventort.setValidationVisible(true);
-		textfield_eventort.setRequired(true);
 		textfield_eventort.setRequiredError("Please set the Event Location");
 
 		// Buttons

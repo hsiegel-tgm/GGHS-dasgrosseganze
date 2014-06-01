@@ -17,10 +17,12 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -36,6 +38,11 @@ import com.vaadin.ui.VerticalLayout;
 
 
 
+
+
+
+
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,84 +70,96 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 
 /**
- * @author Hannah Siegel
- *  
- * meli
- * TODO JUnit
+ * @author Hannah Siegel & Laurenz Gebauer
+ * @version 2014-05-31
  * 
-
- * G&H
- * TODO Design pefekto
- * TODO GUI Test
- * 
- * 
+ * The class Login implements the Login Function of our program
  * */
 
 @SuppressWarnings("serial")
 @Theme("myproject2")
-public class LogIn extends VerticalLayout implements View {
+public class Login extends VerticalLayout implements View {
+	//user Textfield
 	private TextField textfield_user;
-	private  FatNavigator navigator;
-	private String m_username, m_userid;
-
+	
+	//Navigator Object
+	private FatNavigator navigator;
+	
+	//Layout
+	private CustomLayout layout;
+	
 	/**
+	 * Constructor of the class
+	 * 
 	 * @param nav
 	 * @param m
 	 */
-	public  LogIn(FatNavigator nav, Master m) {
+	public Login(FatNavigator nav) {
 		this.navigator=nav;
 		
-		final VerticalLayout layout =this;
-		layout.setMargin(true);
+		//HTML Design
+		InputStream layoutFile = getClass().getResourceAsStream("startpage.html");
+		layout=null;
+		try {
+			layout = new CustomLayout(layoutFile);
+		} catch (Exception e) {
+			System.out.println("there was a problem"); //TODO ex handling
+		}
+		layout.addStyleName("sada");
 
-		layout.addComponent(new Label("LOG IN"));
-		
 		//Layout Components
-		Button button_login = new Button("Go!");
-		button_login.setClickShortcut(KeyCode.ENTER,null);
-        textfield_user = new TextField();
-		Button button_NewUser = new Button("Register new User!");
-
-        //Adding Components
-		layout.addComponent(textfield_user);
-		layout.addComponent(button_login);
-		layout.addComponent(button_NewUser); 
+		Button okbutton = new Button("Login");
+		okbutton.setClickShortcut(KeyCode.ENTER,null);
+		textfield_user = new TextField();
+        final PasswordField password = new PasswordField();
+        Button neuerBenutzer = new Button("Neu?");
+        textfield_user.setRequired(true);
+		textfield_user.setRequiredError("Please set the Username");
 		
-		//Register new User Listener
-		button_NewUser.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				navigator.navigateTo(Variables.REGISTER);
-			}
-		});
+        //Adding Components
+		layout.addComponent(new Label("LOG IN"));
+		layout.addComponent(textfield_user, "username");
+		layout.addComponent(password, "password");
+		layout.addComponent(okbutton,"okbutton");
+		layout.addComponent(neuerBenutzer,"neuerBenutzer");
+		
+		//adding layout to webpage
+		this.addComponent(layout);
+		
+		//Register Button Listener
+		neuerBenutzer.addClickListener(new PinkShoes(navigator,
+				Variables.REGISTER));
 		
 		//Login Listener
-		button_login.addClickListener(new Button.ClickListener() {
+		okbutton.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				
 				//Fetching value
 				String inputUsername = textfield_user.getValue();
 
-				List<?> res = QueryHelper.executeBasic("getUsers");
-				
+				//fetching all the users out of the DB
+				List<User> res = QueryHelper.executeBasic("getUsers");
+								
 				//checking if username is known
-				boolean b = true;
-				for (int i = 0; i < res.size(); ++i) {
-					User user = (User) res.get(i);
-					if((inputUsername.equals(user.getUsername()))&&b){
+				boolean found_user = false;
+				for(User user : res){
+				//for (int i = 0; i < res.size(); ++i) {
+				//	User user = (User) res.get(i);
+					if((inputUsername.equals(user.getUsername()))){
+						found_user = true;
+						
 						//log in successful
 						String user_id = user.getID().longValue()+"";
 						
 						//Navigate to startpage
-						navigator.navigateTo(Variables.STARTPAGE+"/"+inputUsername+"/"+user_id);
-						b = false;
+						new PinkShoes(navigator,Variables.STARTPAGE,inputUsername,user_id).navigation();	
 					}
 				}
 				
 				//Message
-				if(b)
-					layout.addComponent(new Label("Could not find username - please register! :)"));
-				
+				if(!found_user){
+					Notification.show("Could not find username - please register! :)");
+				}
 			}
 		});
 	}
@@ -150,6 +169,6 @@ public class LogIn extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		Notification.show("WELCOME . . .");		
+		//Notification.show("WELCOME . . .");		
 	}
 }

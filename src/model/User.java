@@ -34,7 +34,7 @@ import org.hibernate.validator.constraints.Email;
 //Named Query 
 @NamedQueries({
 	@NamedQuery(name="getUsers",query="FROM User u order by u.ID"),
-	@NamedQuery(name="getSpecificUser",query="FROM User u WHERE  u.ID = :id"),
+	@NamedQuery(name="getSpecificUser,query="FROM User u WHERE  u.ID = :id"),
 
 })
 
@@ -54,10 +54,6 @@ public class User {
 	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
 	private Collection<Notification> notifications = new Vector <Notification>();  
 	
-	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
-	//private Collection<DoodleEvent> admin_of_events = new Vector <DoodleEvent>();  
-	
-	
 	public User(){
 		this.username="User";
 		this.email="no@email.com";
@@ -74,7 +70,7 @@ public class User {
 
 	public User(String username, String email){
 		if(username != null  && username != ""){
-		this.username=username;
+			this.username=username;
 		}else{
 			this.username="User";
 		}	

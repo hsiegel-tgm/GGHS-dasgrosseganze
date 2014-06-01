@@ -12,6 +12,7 @@ import org.hibernate.Transaction;
 import model.Abgestimmt;
 import model.DoodleEvent;
 import model.Eingeladen;
+import model.Kommentar;
 import model.User;
 import model.Zeit;
 
@@ -53,6 +54,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	private DoodleEvent m_event;
 	private List<Zeit> m_times;
 	private List<Eingeladen> m_eingeladene;
+	private List<Kommentar> m_comments;
 
 	protected EventAnzeigen(FatNavigator nav, Master m) {
 		this.m_navigator = nav;
@@ -121,9 +123,20 @@ public class EventAnzeigen extends VerticalLayout implements View {
 
 		layout.addComponent(table);
 
-		// Printing Eventname
+		layout.addComponent(new Label("KOMMENTARE:"));
+		for(Kommentar k : m_comments){
+			layout.addComponent(new Label("von: "+k.getUser().getUsername() + "   gepostet: "+k.getGepostet()));
+			layout.addComponent(new Label("           "+k.getText()));
+		}
+		Button button_newcomment = new Button("New Comment");
+		layout.addComponent(button_newcomment);
 
-		//TODO schlecht..
+		//newcomment
+		if(m_isadmin)
+			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","admin"));
+		else
+			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","invited"));
+
 		if (m_isadmin) {
 			// D Button
 			Button button_delete = new Button("Delete This Event");
@@ -145,7 +158,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 						session.delete(z);
 					}
 
-					//session.delete(m_event); TODO
+					//session.delete(m_event); TODO!!
 
 					t.commit();
 					session.close();
@@ -165,7 +178,8 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		m_event = (DoodleEvent) l.get(0);
 		
 		m_times = QueryHelper.executeId("getTimePossibilitesforSpecificEvent",  m_event.getID()+"");
-		
+		m_comments = QueryHelper.executeId(Variables.GETKOMMENTS,  m_event.getID()+"");
+
 		m_eingeladene = QueryHelper.executeId("getEingeladenforSpecificEvent",  m_eventque);		
 	}
 	
@@ -199,9 +213,10 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		int inc=0;
 		for(Zeit z : m_times){
 			Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
-			QueryHelper.saveObject(a);
+			QueryHelper.saveAbgestimmt(a);
 			++inc;
 		}
+		//Notification n = new Notification("Successful","Saves");
 		this.addComponent(new Label("saved your choices.."));
 	}
 	
@@ -215,7 +230,6 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		String s = event.getParameters().split("/")[3];
 		if (s.equals("admin"))
 			m_isadmin = true;
-		//System.out.println("admin: ... "+m_isadmin);
 		executeQuerys();
 		init();
 	}

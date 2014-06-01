@@ -24,7 +24,6 @@ import com.example.myproject2.Variables;
 	@NamedQuery(name=Variables.GETALLEVENTS,query="FROM DoodleEvent"), 
 	@NamedQuery(name=Variables.GETEVENT_BYID,query="FROM DoodleEvent d WHERE  d.ID = :id"),
 	@NamedQuery(name=Variables.GETEVENT_BYADMIN,query="FROM DoodleEvent e WHERE  e.user.ID = :id"),
-
 })
 //TODO where user id =  user session
 

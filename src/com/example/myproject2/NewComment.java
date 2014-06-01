@@ -2,6 +2,8 @@ package com.example.myproject2;
 
 import javax.servlet.annotation.WebServlet;
 
+import model.DoodleEvent;
+import model.Kommentar;
 import model.User;
 
 import com.vaadin.annotations.Theme;
@@ -64,100 +66,104 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * 
  * 
  * */
-public class NewUser extends VerticalLayout implements View {
+public class NewComment extends VerticalLayout implements View {
 	// Textfields
-	private TextField textfield_username, textfield_email;
+	private TextField textfield_commentar;
 
 	// Navigator and master object
 	private FatNavigator m_navigator;
 
+	private DoodleEvent m_event;
+	private User m_user;
+	
+	private String m_username, m_userid, m_eventid;
+	private String m_isadmin;
+	
 	// Layout
 	private CustomLayout layout;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param nav
-	 *            navigator object
-	 */
-	protected NewUser(FatNavigator nav) {
-
-		this.m_navigator = nav;
-
-		// HTML Design
-		InputStream layoutFile = getClass().getResourceAsStream("newuser.html");
-		layout = null;
-		try {
-			layout = new CustomLayout(layoutFile);
-		} catch (Exception e) {
-			System.out.println("there was a problem"); // TODO ex handling
-		}
-		layout.addStyleName("NewUser");
+	public void init(){
+		final VerticalLayout layout = this;
+		layout.setMargin(true);
 
 		// username Textfield
-		textfield_username = new TextField();
-
-		// email Textfield
-		textfield_email = new TextField();
+		textfield_commentar = new TextField();
 
 		// Send and Back Button
-		Button button_send = new Button("Anmelden");
-		Button button_back = new Button("Zurück");
+		Button button_send = new Button("Save");
+		Button button_back = new Button("Zurueck");
 		button_send.setClickShortcut(KeyCode.ENTER, null);
 		button_back.setClickShortcut(KeyCode.ARROW_LEFT, null);
 
 		// adding layout to webpage
-		layout.addComponent(new Label("username:"));
-		layout.addComponent(textfield_username, "textfield_username");
-		layout.addComponent(new Label("email:"));
-		layout.addComponent(textfield_email, "textfield_email");
-		layout.addComponent(button_send, "button_send");
-		layout.addComponent(button_back, "button_back");
-		this.addComponent(layout);
+		layout.addComponent(new Label("comment:"));
+		layout.addComponent(textfield_commentar);
+		
 
 		// Back Button Listener
-		button_back
-				.addClickListener(new PinkShoes(m_navigator, Variables.LOGIN));
+		button_back.addClickListener(new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin)); //TODO which ones?
 
 		// Send Button Listener
 		button_send.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 
 				// fetching values
-				String username = textfield_username.getValue();
-				String email = textfield_email.getValue();
+				String text = textfield_commentar.getValue();
 
-				boolean valid = true;
 
-				if (username == null || username.equals("")) {
-					Notification.show("please set a username",
+				if (text == null || text.equals("")) {
+					Notification.show("please set a text",
 							Notification.TYPE_WARNING_MESSAGE); //TODO dep
-					valid = false;
-				}
-				try {
-					InternetAddress emailAddr = new InternetAddress(email);
-					emailAddr.validate();
-				} catch (AddressException ex) {
-					Notification.show("please set a valid email address",
-							Notification.TYPE_WARNING_MESSAGE); //TODO dep
-					valid = false;
-
-				}
-
-				if (valid) {
+				}else{
 					// new User object
-					User u = new User(username, email);
-					if(QueryHelper.saveObject(u)){
+					Kommentar k = new Kommentar(m_event, text, new Date(), m_user); 
+					if(QueryHelper.saveObject(k)){
 						// Notification
-						Notification.show("Successful - You have been registered.");
+						Notification.show("Saved...");
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+						}
+						new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin).navigation();
+
 					}
 				}
 			}
 		});
+		layout.addComponent(button_send);
+		layout.addComponent(button_back);
+
+	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param nav
+	 *            navigator object
+	 */
+	protected NewComment(FatNavigator nav) {
+		this.m_navigator = nav;
 	}
 
+	public void executeQuerys(){
+		List<?> l = QueryHelper.executeId(Variables.GETEVENT_BYID, m_eventid);
+		
+		m_event = (DoodleEvent) l.get(0);
+		
+		m_user = (User) QueryHelper.executeId(Variables.GETUSER_BYID,  m_userid).get(0);		
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
+		this.removeAllComponents();
+		m_username = event.getParameters().split("/")[0];
+		m_userid = event.getParameters().split("/")[1];
+		m_eventid = event.getParameters().split("/")[2];
+		m_isadmin = event.getParameters().split("/")[3];
+		
+		executeQuerys();
+		
+		init();
 	}
-
 }
