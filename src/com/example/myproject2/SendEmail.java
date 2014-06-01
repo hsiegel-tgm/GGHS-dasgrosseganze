@@ -32,7 +32,7 @@ public class SendEmail {
 		props.put("mail.smtp.auth", "true");
 
 		Authenticator auth = new SMTPAuthenticator();
-		Session mailSession = Session.getDefaultInstance(props, auth);
+		Session mailSession = Session.getInstance(props, auth);
 
 		Transport transport = mailSession.getTransport();
 

@@ -54,6 +54,8 @@ public class User {
 	@Email
 	private String email;
 
+	private String password;
+	
 	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
 	private Collection<Notification> notifications = new Vector <Notification>();  
 	
@@ -62,34 +64,10 @@ public class User {
 		this.email="no@email.com";
 	}
 
-	public User(String username){
-		this.email="no@email.com";
-		if(username != null && username != ""){
-		this.username=username;
-		}else{
-			this.username ="User";
-		}
-	}
-
-	public User(String username, String email){
-		//TODO weg?
-		if(username != null  && username != ""){
+	public User(String username, String email,String password){
 			this.username=username;
-		}else{
-			this.username="User";
-		}	
-		if(email != null && email != ""){
-		try {
 			this.email=email;
-			InternetAddress emailAddr = new InternetAddress(email);
-			emailAddr.validate();
-		} catch (AddressException ex) {
-			//TODO Fehler Ausgabe bzw Exceptionhandling von Hannah!
-			this.email="no@email.com";
-		}
-		}else{
-			this.email="no@email.com";
-		}
+			this.password=password;
 	}
 
 	public String getUsername(){
@@ -98,10 +76,19 @@ public class User {
     public String geteMail(){
     	return this.email;
     }
+    
 	public String toString(){
 		return "username:"+this.username+" - email:"+this.email;
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public Long getID(){
 		return this.ID;
 	}

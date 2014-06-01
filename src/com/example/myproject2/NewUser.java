@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import org.hibernate.Query;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
@@ -45,6 +46,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -146,7 +148,20 @@ public class NewUser extends VerticalLayout implements View {
 
 				if (valid) {
 					// new User object
-					User u = new User(username, email);
+					//String pw = RandomStringUtils.randomAlphanumeric(25);
+					String pw = "123"; //TODO aendern irgendwann :P
+					try {
+						SendEmail.send("hannah.k.siegel@gmail.com","Your password", "Thank you for registering at TheBigWhole. Your password is "+pw);
+					} catch (AddressException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MessagingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					User u = new User(username, email,pw);
+					
 					if(QueryHelper.saveObject(u)){
 						// Notification
 						Notification.show("Successful - You have been registered.");

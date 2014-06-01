@@ -86,6 +86,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 public class Login extends VerticalLayout implements View {
 	//user Textfield
 	private TextField textfield_user;
+	private PasswordField textfield_password;
 	
 	//Navigator Object
 	private FatNavigator navigator;
@@ -101,19 +102,7 @@ public class Login extends VerticalLayout implements View {
 	 */
 	public Login(FatNavigator nav) {
 		this.navigator=nav;
-		/*try {
-			SendEmail.send("hannah.k.siegel@gmail.com","test", "hallo hannah!");
-		} catch (AddressException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-	    System.out.println(RandomStringUtils.randomAlphanumeric(25));
-
-	*/
 		//HTML Design
 		InputStream layoutFile = getClass().getResourceAsStream("startpage.html");
 		layout=null;
@@ -128,7 +117,7 @@ public class Login extends VerticalLayout implements View {
 		Button okbutton = new Button("Login");
 		okbutton.setClickShortcut(KeyCode.ENTER,null);
 		textfield_user = new TextField();
-        final PasswordField password = new PasswordField();
+		textfield_password = new PasswordField();
         Button neuerBenutzer = new Button("Neu?");
         textfield_user.setRequired(true);
 		textfield_user.setRequiredError("Please set the Username");
@@ -136,7 +125,7 @@ public class Login extends VerticalLayout implements View {
         //Adding Components
 		layout.addComponent(new Label("LOG IN"));
 		layout.addComponent(textfield_user, "username");
-		layout.addComponent(password, "password");
+		layout.addComponent(textfield_password, "password");
 		layout.addComponent(okbutton,"okbutton");
 		layout.addComponent(neuerBenutzer,"neuerBenutzer");
 		
@@ -153,6 +142,7 @@ public class Login extends VerticalLayout implements View {
 				
 				//Fetching value
 				String inputUsername = textfield_user.getValue();
+				String pw = textfield_password.getValue();
 
 				//fetching all the users out of the DB
 				List<User> res = QueryHelper.executeBasic("getUsers");
@@ -164,12 +154,18 @@ public class Login extends VerticalLayout implements View {
 				//	User user = (User) res.get(i);
 					if((inputUsername.equals(user.getUsername()))){
 						found_user = true;
+
+						if(user.getPassword().equals(pw)){
+
+							//log in successful
+							String user_id = user.getID().longValue()+"";
 						
-						//log in successful
-						String user_id = user.getID().longValue()+"";
-						
-						//Navigate to startpage
-						new PinkShoes(navigator,Variables.STARTPAGE,inputUsername,user_id).navigation();	
+							//Navigate to startpage
+							new PinkShoes(navigator,Variables.STARTPAGE,inputUsername,user_id).navigation();	
+						}
+						else{
+							Notification.show("False password",Notification.TYPE_WARNING_MESSAGE);
+						}
 					}
 				}
 				
@@ -187,6 +183,5 @@ public class Login extends VerticalLayout implements View {
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		//Notification.show("WELCOME . . .");		
 	}
 }
