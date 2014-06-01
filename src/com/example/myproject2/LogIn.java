@@ -42,6 +42,8 @@ import com.vaadin.ui.VerticalLayout;
 
 
 
+
+
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -56,11 +58,14 @@ import java.util.Vector;
 
 import org.hibernate.Query;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -96,7 +101,19 @@ public class Login extends VerticalLayout implements View {
 	 */
 	public Login(FatNavigator nav) {
 		this.navigator=nav;
+		/*try {
+			SendEmail.send("hannah.k.siegel@gmail.com","test", "hallo hannah!");
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+	    System.out.println(RandomStringUtils.randomAlphanumeric(25));
+
+	*/
 		//HTML Design
 		InputStream layoutFile = getClass().getResourceAsStream("startpage.html");
 		layout=null;
@@ -162,6 +179,7 @@ public class Login extends VerticalLayout implements View {
 				}
 			}
 		});
+		
 	}
 
 	/* (non-Javadoc)

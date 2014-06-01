@@ -43,7 +43,7 @@ public class QueryHelper {
 		Transaction t = session.beginTransaction();
 		t.begin();
 		Query q2 = (Query) session.getNamedQuery(queryname);
-		q2.setParameter("id", id+"%");
+		q2.setParameter("id", "%"+id+"%");
 		List<?> res = q2.list();
 		t.commit();
 		session.close();
