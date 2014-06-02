@@ -4,6 +4,7 @@ import java.util.List;
 
 import model.Abgestimmt;
 import model.User;
+import model.Zeit;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -103,46 +104,58 @@ public class QueryHelper {
 	}
 	
 
-	public static void saveAbgestimmt(Object o) {
-		Abgestimmt a = (Abgestimmt) o;
-		Boolean wertung = QueryHelper.getWertung(a.getUser().getID()
-				.longValue()
-				+ "", a.getZeit().getID().longValue() + "");
-		if (wertung == null) {
-			Session session = InitSession.getSession().openSession();
-			Transaction t = session.beginTransaction();
-			t.begin();
-			session.save(o);
-			t.commit();
-			session.close();
-		} else {
-			System.out.println("gibts schon in der Db");
+	public static void saveAbgestimmt(Zeit z, User u, boolean value) {
+
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
+		q2.setParameter("userid", Long.parseLong(u.getID()+""));
+		q2.setParameter("zeitid", Long.parseLong(z.getID()+""));
+		List<Abgestimmt> res = q2.list();
+		
+		if(res.size()!=0){
+			Abgestimmt a = res.get(0);
+			a.setWertung(value);
+			session.update(a);
 		}
+		else{
+			Abgestimmt a = new Abgestimmt(u,z,value);
+			session.save(a);
+		}
+		
+		
+		t.commit();
+		session.close();
+		
+		
+      
+		
+//		Abgestimmt a = (Abgestimmt) o;
+//		
+//		Boolean wertung = QueryHelper.getWertung(a.getUser().getID().longValue()+ "", a.getZeit().getID().longValue() + "");
+//		if (wertung == null) {
+//			Session session = InitSession.getSession().openSession();
+//			Transaction t = session.beginTransaction();
+//			t.begin();
+//			session.save(o);
+//			t.commit();
+//			session.close();
+//		} else {
+//			System.out.println("gibts schon in der Db");
+//		}
 
 	}
 
 	public static boolean saveObject(Object o) {
 		boolean b = true;
-	//	try{
 			Session session = InitSession.getSession().openSession();
 			Transaction t = session.beginTransaction();
 			t.begin();
 			session.save(o);
 			t.commit();
 			session.close();
-			System.out.println("super");
 
-//		}
-//		catch(Throwable t){
-//			System.out.println("shiiiiiiiiiiit");
-//
-//			//TODO na so geht des ned
-//			if(t instanceof MySQLIntegrityConstraintViolationException){
-//				//MySQLIntegrityConstraintViolationException e = (MySQLIntegrityConstraintViolationException) t;
-//				Notification.show("Username already extists",Notification.TYPE_ERROR_MESSAGE);
-//				b = false;
-//			}
-//		}
 		return b;
 	}
 }

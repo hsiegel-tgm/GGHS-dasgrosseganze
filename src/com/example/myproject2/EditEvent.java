@@ -82,7 +82,7 @@ public class EditEvent extends VerticalLayout implements View {
 	private TextField textfield_eventname, textfield_eventort;
 
 	private PopupDateField fix;
-	
+
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
 
@@ -132,7 +132,7 @@ public class EditEvent extends VerticalLayout implements View {
 		m_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 		Button button_logout = new Button(Variables.LOGOUT);
-	
+
 		this.addComponent(m_save);
 		this.addComponent(button_back);
 		this.addComponent(button_logout);
@@ -155,6 +155,26 @@ public class EditEvent extends VerticalLayout implements View {
 
 		this.addComponent(m_plus);
 		this.addComponent(m_minus);
+
+		// Plus Button Listener
+		m_plus.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				newZeit(new Date());
+			}
+		});
+
+		// Minus Button Listener
+		m_minus.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				if (popupDateField_zeiten.size() > 1) {
+					// remove date possibility
+					PopupDateField p = popupDateField_zeiten
+							.elementAt(popupDateField_zeiten.size() - 1);
+					EditEvent.this.removeComponent(p);
+					popupDateField_zeiten.remove(p);
+				}
+			}
+		});
 	}
 
 	public void userinvitedwuuuhu() {
@@ -180,14 +200,14 @@ public class EditEvent extends VerticalLayout implements View {
 				founduser = true;
 			}
 		}
-		twinColSet_friends.setRows(m_allusers.size()); //TODO set table rows??
+		twinColSet_friends.setRows(m_allusers.size()); // TODO set table rows??
 
 		this.addComponent(twinColSet_friends);
 
 	}
 
 	public void userinvitedbasic() {
-		//TODO event anzeigen? :)
+		// TODO event anzeigen? :)
 		Table m_tableUsers = new Table("All Users");
 		m_tableUsers.setSelectable(false);
 		m_tableUsers.setMultiSelect(false);
@@ -201,14 +221,16 @@ public class EditEvent extends VerticalLayout implements View {
 		int i = 0;
 		for (Eingeladen e : m_usersinvited) {
 			User u = e.getUser();
-			m_tableUsers.addItem(new Object[] { u.getID() , u.getUsername() , u.geteMail()}, new Integer(i));
+			m_tableUsers.addItem(
+					new Object[] { u.getID(), u.getUsername(), u.geteMail() },
+					new Integer(i));
 			i++;
 		}
-		
+
 		this.addComponent(m_tableUsers);
 	}
 
-	public void newZeit(Date d){	
+	public void newZeit(Date d) {
 		PopupDateField p = new PopupDateField();
 		p.setValue(d);
 		p.setImmediate(true);
@@ -218,39 +240,30 @@ public class EditEvent extends VerticalLayout implements View {
 		this.addComponent(p);
 		popupDateField_zeiten.add(p);
 	}
-	
-	public Boolean usershavevoted(){
+
+	public Boolean usershavevoted() {
 		Zeit z = m_times.get(0);
-		List <Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue()+"");
-		if(a==null)
-			return false;
-		if(a.size()==m_usersinvited.size())
-			return true;
-		else 
-			return null;
-	}
-	
-	public void datefix(){
-		Boolean b = usershavevoted();
+		List<Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
 		
-		if (b != null && b.booleanValue()){
-		//Zeit z = m_times.get(0);
-		//List <Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue()+"");
-		//if(a!=null){
-		//	if(a.size()==m_usersinvited.size()){
-				this.addComponent(new Label("FIX DATUM:"));
-				fix = new PopupDateField();
-				fix.setValue(new Date());
-				fix.setImmediate(true);
-				fix.setTimeZone(TimeZone.getTimeZone("UTC"));
-				fix.setLocale(Locale.US);
-				fix.setResolution(Resolution.HOUR);
-				this.addComponent(fix);
-		//	}
-		//}
-		}
+		if (a == null)
+			return null;
+		else if (a.size() == m_usersinvited.size())
+			return true;
+		else
+			return false;
 	}
-	
+
+	public void datefix() {
+		this.addComponent(new Label("FIX DATUM:"));
+		fix = new PopupDateField();
+		fix.setValue(new Date());
+		fix.setImmediate(true);
+		fix.setTimeZone(TimeZone.getTimeZone("UTC"));
+		fix.setLocale(Locale.US);
+		fix.setResolution(Resolution.HOUR);
+		this.addComponent(fix);
+	}
+
 	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
@@ -262,36 +275,17 @@ public class EditEvent extends VerticalLayout implements View {
 		buttons();
 
 		Boolean b = usershavevoted();
-		
-		if (b != null && b.booleanValue()){
+		System.out.println("B::" + b.booleanValue());
+
+		if (b != null && b.booleanValue()) {
 			datefix();
 		}
 
-		if (b != null && !b.booleanValue()){
+		if (b != null && !b.booleanValue()) {
 			zeiten();
 		}
-		
+
 		userinvitedbasic();
-
-
-		// Plus Button Listener
-		m_plus.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				newZeit(new Date());				
-			}
-		});
-
-		// Minus Button Listener
-		m_minus.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				if (popupDateField_zeiten.size() > 1) {
-					// remove date possibility
-					PopupDateField p = popupDateField_zeiten.elementAt(popupDateField_zeiten.size() - 1);
-					EditEvent.this.removeComponent(p);
-					popupDateField_zeiten.remove(p);
-				}
-			}
-		});
 
 		// Send Button Listener
 		m_save.addClickListener(new Button.ClickListener() {
@@ -300,9 +294,10 @@ public class EditEvent extends VerticalLayout implements View {
 				String name = textfield_eventname.getValue();
 				String ort = textfield_eventort.getValue();
 
-//				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
-//				Vector vector_invitedUsers = new Vector();
-//				vector_invitedUsers.addAll(invitedUsers);
+				// Collection<?> invitedUsers = (Collection<?>)
+				// twinColSet_friends.getValue();
+				// Vector vector_invitedUsers = new Vector();
+				// vector_invitedUsers.addAll(invitedUsers);
 
 				// Validation
 				boolean valid = true;
@@ -311,54 +306,60 @@ public class EditEvent extends VerticalLayout implements View {
 					// validating text Fields
 					textfield_eventort.validate();
 					textfield_eventname.validate();
-
+					
 					// validating all the Dates
 					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
 						// checking if date lies in the past
 						Date d = popupDateField_zeiten.elementAt(i).getValue();
 						if (d.before(new Date())) {
-							popupDateField_zeiten.elementAt(i).setValidationVisible(true);
 							Notification.show("Please set a Future Date - Date Input Field number:"+ (i + 1),Notification.TYPE_WARNING_MESSAGE);
 							valid = false;
 						}
 					}
 
-//					// Checking if there is at least one User invited
-//					if (vector_invitedUsers.size() == 0) {
-//						valid = false;
-//						layout.addComponent(new Label(
-//								"Please Invite at least one User"));
-//					}
+					// // Checking if there is at least one User invited
+					// if (vector_invitedUsers.size() == 0) {
+					// valid = false;
+					// layout.addComponent(new Label(
+					// "Please Invite at least one User"));
+					// }
 
 				} catch (InvalidValueException e) {
 					valid = false;
-					Notification.show(e.getMessage(),Notification.TYPE_WARNING_MESSAGE);
+					Notification.show(e.getMessage(),
+							Notification.TYPE_WARNING_MESSAGE);
 				}
-				
+
 				DoodleEvent eve = m_event;
 
-				if(fix!=null){
-					System.out.println("saving date:"+fix.getValue());
+				if (fix != null) {
+					System.out.println("saving date:" + fix.getValue());
 					eve.setFixDatum(fix.getValue());
 				}
 
 				eve.setName(name);
 				eve.setOrt(ort);
-
+				//TODO fix date is ja so ein bledsinn!!!... hahahhah
 				QueryHelper.update(eve);
+
+				//TODO schirch arg nein alles schleeeecht
+				if(usershavevoted() != null && !usershavevoted()){
+//					for(Zeit z : m_times){
+//						QueryHelper.delete(z);
+//					}
+//					
+//					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
+//						Date d = popupDateField_zeiten.elementAt(i).getValue();
+//						Zeit eventTime = new Zeit(d, d, m_event); //TODO endzeit
+//					
+//						// saving the time
+//						QueryHelper.update(eventTime);
+//					}
+				}
+
 				
-
-				// // saving all the Dates
-				// for (int i = 0; i < popupDateField_zeiten.size(); i++) {
-				// // checking if date lies in the Future
-				// Date d = popupDateField_zeiten.elementAt(i).getValue();
-				// if (d.after(new Date())) {
-				// Zeit eventTime = new Zeit(d, d, e); // TODO endzeit
-				// // saving the time
-				// session.save(eventTime);
-				// }
-				// }
-
+				
+				
 				// //Database connection
 				// Session session2 = InitSession.getSession().openSession();
 				// Transaction t2 = session2.beginTransaction();
@@ -391,20 +392,16 @@ public class EditEvent extends VerticalLayout implements View {
 
 		m_event = (DoodleEvent) l.get(0);
 
-		m_times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,m_event.getID() + "");
+		m_times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,
+				m_event.getID() + "");
 
 		m_allusers = QueryHelper.executeBasic(Variables.GETUSER);
-		
-		m_usersinvited = QueryHelper.executeId(Variables.GETEINGELADEN_BYEVENTID,m_event.getID()+"");
-		
-		m_usersabgestimmt = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID,m_event.getID()+"");
 
-		// m_comments = QueryHelper.executeId(Variables.GETKOMMENTS,
-		// m_event.getID()+"");
-		//
-		// m_eingeladene =
-		// QueryHelper.executeId("getEingeladenforSpecificEvent", m_eventque);
-		//
+		m_usersinvited = QueryHelper.executeId(
+				Variables.GETEINGELADEN_BYEVENTID, m_event.getID() + "");
+
+		m_usersabgestimmt = QueryHelper.executeId(
+				Variables.GETABGESTIMMT_BYEVENTID, m_event.getID() + "");
 
 	}
 

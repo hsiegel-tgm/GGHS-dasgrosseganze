@@ -68,8 +68,12 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		layout.addComponent(new Label("Event: " + m_event.getName()));
 		layout.addComponent(new Label("Ort: " + m_event.getOrt()));
 
+		if(m_event.getFixDatum()!=null){
+			layout.addComponent(new Label("Am: " + m_event.getFixDatum()));
+		}
+		
 		// TABELLE
-		final Table table = new Table("Vote for Event number " + m_eventque);
+		final Table table = new Table("");
 		table.setSelectable(false);
 		table.setColumnReorderingAllowed(true);
 		//table.setColumnCollapsingAllowed(true);
@@ -94,6 +98,9 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					if(wertung==null)
 						wertung = false;
 					CheckBox cbx = new CheckBox("", wertung);
+					if(m_event.getFixDatum()!=null){
+						cbx.setEnabled(false);
+					}
 					checkboxes.add(cbx);
 					o2[looper]=cbx;
 					looper++;
@@ -141,11 +148,13 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		layout.addComponent(button_newcomment);
 
 		//newcomment
-		if(m_isadmin)
+		if(m_isadmin){
 			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","admin"));
-		else
+		}
+		else{
 			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","invited"));
-
+		}
+		
 		if (m_isadmin) {
 			// D Button
 			Button button_delete = new Button("Delete This Event");
@@ -168,7 +177,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					for (Zeit z : m_times) {
 						session.delete(z);
 					}
-
+					//todo: abgestimmt loeschen??
 					//session.delete(m_event);// TODO!!
 
 					t.commit();
@@ -181,16 +190,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			
 			button_edit.addClickListener(new PinkShoes(m_navigator, Variables.EDITEVENT, m_username, m_userid, m_event.getID().longValue()+""));
 			
-			button_edit.addClickListener(new Button.ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					
-					Notification.show("umleiteeen",Notification.TYPE_ERROR_MESSAGE); //TODO
-				}
-			});
-			
 		}
-	
 		addingButtons(layout);
 	}
 	
@@ -236,35 +236,29 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		
 		for(Zeit z : m_times){
 			
-			Boolean wertung = QueryHelper.getWertung(user.getID().longValue()+"", z.getID().longValue()+"");
-
-			if(wertung == null){
-				Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
-				QueryHelper.saveAbgestimmt(a);
-			}
-			else{
-				List <Abgestimmt> abg = QueryHelper.executeAbstimmung(user.getID().longValue()+"", z.getID().longValue()+"");
-				//QueryHelper.delete(abg.get(0)); //TODO
-				Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
-				QueryHelper.saveAbgestimmt(a);
-				Notification.show("Neue abstimmung wurde gespeichert.",Notification.TYPE_ERROR_MESSAGE);
-			}
+			//Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
+			QueryHelper.saveAbgestimmt(z,user,checkboxes.elementAt(inc).getValue());
+			
 			++inc;
 		}
 		Notification.show("saved yout choices... ");
-		//this.addComponent(new Label("saved your choices.."));
 	}
 	
 	//IoC Prinzip
 	@Override
 	public void enter(ViewChangeEvent event) {
 		this.removeAllComponents();
+		Notification.show("enter");
 		m_username = event.getParameters().split("/")[0];
 		m_userid = event.getParameters().split("/")[1];
 		m_eventque = event.getParameters().split("/")[2];
 		String s = event.getParameters().split("/")[3];
-		if (s.equals("admin"))
+		System.out.println("admin:"+s);
+		if (s.equals("admin")){
 			m_isadmin = true;
+		}else{
+			m_isadmin = false;
+		}
 		executeQuerys();
 		init();
 	}

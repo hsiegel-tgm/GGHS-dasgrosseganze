@@ -124,12 +124,7 @@ public class NewComment extends VerticalLayout implements View {
 					if(QueryHelper.saveObject(k)){
 						// Notification
 						Notification.show("Saved...");
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-						}
-						System.out.println("navigation");
+
 						new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin).navigation();
 
 					}
