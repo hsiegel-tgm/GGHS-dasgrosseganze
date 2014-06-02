@@ -1,3 +1,5 @@
+
+
 package com.example.myproject2;
 
 import java.util.List;
@@ -45,20 +47,20 @@ import com.vaadin.data.Property.ValueChangeEvent;
  *         2014-05-07 Hannah erstellt
  * 
  * */
-public class EventAnzeigen extends VerticalLayout implements View {
+public class Elternsprechtag extends VerticalLayout implements View {
 
 	private FatNavigator m_navigator;
 	private String m_username, m_userid, m_eventque;
 	private User user;
 	private boolean m_isadmin;
-	private Vector<CheckBox> checkboxes;
+	private Vector<RadioButton> checkboxes;
 	private DoodleEvent m_event;
 	private List<Zeit> m_times;
 	private List<Eingeladen> m_eingeladene;
 	private List<Kommentar> m_comments;
 	private Kommentar kommentar;
 	
-	protected EventAnzeigen(FatNavigator nav, Master m) {
+	protected Elternsprechtag(FatNavigator nav, Master m) {
 		this.m_navigator = nav;
 	}
 

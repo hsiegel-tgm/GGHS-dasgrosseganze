@@ -49,6 +49,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
@@ -81,7 +82,8 @@ public class EditEvent extends VerticalLayout implements View {
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
 
-	private PopupDateField m_fix;
+	//private PopupDateField m_fix;
+	private ComboBox m_fix;
 
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
@@ -254,13 +256,26 @@ public class EditEvent extends VerticalLayout implements View {
 //	}
 
 	public void datefix() {
-		this.addComponent(new Label("FIX DATUM:"));
-		m_fix = new PopupDateField();
-		m_fix.setValue(new Date());
-		m_fix.setImmediate(true);
-		m_fix.setTimeZone(TimeZone.getTimeZone("UTC"));
-		m_fix.setLocale(Locale.US);
-		m_fix.setResolution(Resolution.HOUR);
+		this.addComponent(new Label(""));
+		
+
+        m_fix = new ComboBox("FIX DATUM");
+        m_fix.setInvalidAllowed(false);
+        m_fix.setNullSelectionAllowed(false);
+        for( Zeit z : m_times){
+        	m_fix.addItem(z.getAnfang()+"");
+        }
+    
+
+    
+		
+//		
+//		m_fix = new PopupDateField();
+//		m_fix.setValue(new Date());
+//		m_fix.setImmediate(true);
+//		m_fix.setTimeZone(TimeZone.getTimeZone("UTC"));
+//		m_fix.setLocale(Locale.US);
+//		m_fix.setResolution(Resolution.HOUR);
 		this.addComponent(m_fix);
 	}
 
@@ -316,7 +331,9 @@ public class EditEvent extends VerticalLayout implements View {
 							valid = false;
 						}
 					}
-
+					
+					//TODO fix datum check wenn leer?
+					
 					// // Checking if there is at least one User invited
 					// if (vector_invitedUsers.size() == 0) {
 					// valid = false;
@@ -326,21 +343,26 @@ public class EditEvent extends VerticalLayout implements View {
 
 				} catch (InvalidValueException e) {
 					valid = false;
-					Notification.show(e.getMessage(),
-							Notification.TYPE_WARNING_MESSAGE);
+					Notification.show(e.getMessage(),Notification.TYPE_WARNING_MESSAGE);
 				}
 
 				DoodleEvent eve = m_event;
 
 				if (m_fix != null) {
-					System.out.println("saving date:" + m_fix.getValue());
-					eve.setFixDatum(m_fix.getValue());
-					QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got a final date: "+m_fix.getValue());
+			        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				    Date d = null;
+					try {
+						d = simpleDateFormat.parse(m_fix.getValue()+"");
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
+					eve.setFixDatum(d);
+					QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got a final date: "+d);
 				}
 
 				eve.setName(name);
 				eve.setOrt(ort);
-				//TODO fix date is ja so ein bledsinn!!!... hahahhah
 				QueryHelper.update(eve);
 				
 				//TODO nur wenn wirklich aenderung..
