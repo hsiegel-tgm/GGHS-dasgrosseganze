@@ -93,6 +93,14 @@ public class QueryHelper {
 		t.commit();
 		session.close();
 	}
+	public static void update(Object o) {
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		session.update(o);
+		t.commit();
+		session.close();
+	}
 	
 
 	public static void saveAbgestimmt(Object o) {

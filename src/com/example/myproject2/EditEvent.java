@@ -115,6 +115,8 @@ public class EditEvent extends VerticalLayout implements View {
 		
 		// Eventort
 		textfield_eventort = new TextField();
+		textfield_eventort.setValue(m_event.getOrt());
+		
 		// textfield_eventort.setValidationVisible(true);
 		textfield_eventort.setRequiredError("Please set the Event Location");
 
@@ -266,16 +268,19 @@ public class EditEvent extends VerticalLayout implements View {
 					valid = false;
 					layout.addComponent(new Label(e.getMessage()));
 				}
-				Session session2 = InitSession.getSession().openSession();
-				Transaction t2 = session2.beginTransaction();
-				t2.begin();
+				//Session session2 = InitSession.getSession().openSession();
+				//Transaction t2 = session2.beginTransaction();
+				//t2.begin();
 				//DoodleEvent eve = (DoodleEvent)session2.get(DoodleEvent.class, m_event.getID()); 
 				DoodleEvent eve = m_event; 
 
-					eve.setName(name);
-					session2.update(eve);
-				 t2.commit();
-				 session2.close();
+				
+				eve.setName(name);
+				eve.setName(ort);
+
+				QueryHelper.update(eve);
+			//	t2.commit();
+				//session2.close();
 				
 				//QueryHelper.saveObject(eve);
 				
