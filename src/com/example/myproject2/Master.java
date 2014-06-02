@@ -50,6 +50,7 @@ public class Master extends UI {
 		navigator.addView(Variables.VOTE,new EventAnzeigen(navigator,this));
 		navigator.addView(Variables.COMMENT,new NewComment(navigator));
 		navigator.addView(Variables.SHOWQUERYRESULT,new ShowQueryResult(navigator));
+		navigator.addView(Variables.SHOWNOTIFICATIONS,new ShowNotification(navigator));
 
 	}
 }

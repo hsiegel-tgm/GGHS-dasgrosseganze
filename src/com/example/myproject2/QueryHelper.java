@@ -3,6 +3,9 @@ package com.example.myproject2;
 import java.util.List;
 
 import model.Abgestimmt;
+import model.DoodleEvent;
+import model.DoodleNotification;
+import model.Eingeladen;
 import model.User;
 import model.Zeit;
 
@@ -157,5 +160,25 @@ public class QueryHelper {
 			session.close();
 
 		return b;
+	}
+	
+	
+	public static void notificate(DoodleEvent e, String text) {
+		
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session.getNamedQuery(Variables.GETEINGELADEN_BYEVENTID);
+		q2.setParameter("id", Long.parseLong(e.getID()+""));
+		List<Eingeladen> res = q2.list();
+		t.commit();
+		session.close();
+		
+		for(Eingeladen ein : res){
+			User u = ein.getUser();
+			DoodleNotification dn = new DoodleNotification(u,text);
+			QueryHelper.saveObject(dn);
+		}
+	
 	}
 }

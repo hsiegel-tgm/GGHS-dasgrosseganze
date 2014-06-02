@@ -35,6 +35,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import model.DoodleEvent;
+import model.DoodleNotification;
 import model.Eingeladen;
 import model.User;
 import model.Zeit;
@@ -307,22 +308,25 @@ public class NewEvent extends VerticalLayout implements View {
 //					vector_invitedUsers.addAll(invitedUsers);
 
 					//Database connection
-					Session session2 = InitSession.getSession().openSession();
-					Transaction t2 = session2.beginTransaction();
-					t2.begin();
+					//Session session2 = InitSession.getSession().openSession();
+					///Transaction t2 = session2.beginTransaction();
+					//t2.begin();
 
 					//Saving invited users into DB
 					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
 						//fetching number of added User
 						int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
-						
+						User u = usr.elementAt(nummer);
 						//saving into DB
-						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);						
-						session2.save(eingeladen);
+						Eingeladen eingeladen = new Eingeladen(u, e);						
+						QueryHelper.saveObject(eingeladen);
+						//DoodleNotification dn = new DoodleNotification(u,Variables.getInvitedText(u.getUsername(),e.getName()));
+						//QueryHelper.saveObject(dn); //TODO
 					}
+					QueryHelper.notificate(e, "Dear User, you just got invited to"+e.getName());
 
-					t2.commit();
-					session2.close();
+				//	t2.commit();
+				//	session2.close();
 
 					// Notification
 					layout.addComponent(new Label("Event was saved..."));

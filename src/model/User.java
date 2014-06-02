@@ -56,7 +56,7 @@ public class User {
 	private String password;
 	
 	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
-	private Collection<Notification> notifications = new Vector <Notification>();  
+	private Collection<DoodleNotification> notifications = new Vector <DoodleNotification>();  
 	
 	public User(){
 		this.username="User";

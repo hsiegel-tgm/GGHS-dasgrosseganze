@@ -81,7 +81,7 @@ public class EditEvent extends VerticalLayout implements View {
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
 
-	private PopupDateField fix;
+	private PopupDateField m_fix;
 
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
@@ -255,13 +255,13 @@ public class EditEvent extends VerticalLayout implements View {
 
 	public void datefix() {
 		this.addComponent(new Label("FIX DATUM:"));
-		fix = new PopupDateField();
-		fix.setValue(new Date());
-		fix.setImmediate(true);
-		fix.setTimeZone(TimeZone.getTimeZone("UTC"));
-		fix.setLocale(Locale.US);
-		fix.setResolution(Resolution.HOUR);
-		this.addComponent(fix);
+		m_fix = new PopupDateField();
+		m_fix.setValue(new Date());
+		m_fix.setImmediate(true);
+		m_fix.setTimeZone(TimeZone.getTimeZone("UTC"));
+		m_fix.setLocale(Locale.US);
+		m_fix.setResolution(Resolution.HOUR);
+		this.addComponent(m_fix);
 	}
 
 	public void init() {
@@ -332,15 +332,19 @@ public class EditEvent extends VerticalLayout implements View {
 
 				DoodleEvent eve = m_event;
 
-				if (fix != null) {
-					System.out.println("saving date:" + fix.getValue());
-					eve.setFixDatum(fix.getValue());
+				if (m_fix != null) {
+					System.out.println("saving date:" + m_fix.getValue());
+					eve.setFixDatum(m_fix.getValue());
+					QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got a final date: "+m_fix.getValue());
 				}
 
 				eve.setName(name);
 				eve.setOrt(ort);
 				//TODO fix date is ja so ein bledsinn!!!... hahahhah
 				QueryHelper.update(eve);
+				
+				//TODO nur wenn wirklich aenderung..
+				QueryHelper.notificate(eve, "Dear User, the event " +eve.getName()+" just got edited");
 
 				//TODO schirch arg nein alles schleeeecht
 				if(usershavevoted() != null && !usershavevoted()){

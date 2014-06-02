@@ -165,6 +165,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			button_delete.addClickListener(new Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
+					QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got cancelled");
 
 					Session session = InitSession.getSession().openSession();
 					Transaction t = session.beginTransaction();
@@ -183,6 +184,8 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					t.commit();
 					session.close();
 
+
+					
 					m_navigator.navigateTo(Variables.STARTPAGE + "/" + m_username
 							+ "/" + m_userid);
 				}
@@ -235,10 +238,8 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		int inc=0;
 		
 		for(Zeit z : m_times){
-			
 			//Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
 			QueryHelper.saveAbgestimmt(z,user,checkboxes.elementAt(inc).getValue());
-			
 			++inc;
 		}
 		Notification.show("saved yout choices... ");

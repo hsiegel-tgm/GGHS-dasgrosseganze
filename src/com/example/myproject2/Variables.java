@@ -15,7 +15,10 @@ public class Variables {
 	public static final String COMMENT = "comment";
 	public static final String VOTE = "vote";
 	public static final String SHOWQUERYRESULT = "showresult";
+	public static final String SHOWNOTIFICATIONS = "shownotification";
 
+	
+	
 	//Buttons
 	public static final String SAVE = "Save";
 	public static final String BACK = "Back";
@@ -36,6 +39,12 @@ public class Variables {
 	public static final String GETZEIT_BYEVENTID = "getTimePossibilitesforSpecificEvent";
 	public static final String GETEINGELADEN_BYEVENTID = "getEingeladenforSpecificEvent";
 	public static final String GETABGESTIMMT_BYEVENTID = "getAbgestimmtbyevent";
+	public static final String GETNOTIFICATION_BYUSERID = "getNotificationbyuser";
+
+	
+	public static String getInvitedText(String username2, String name) {
+		return "Dear "+username2 +" You have just been invited to the event called "+name;
+	}
 
 	
 

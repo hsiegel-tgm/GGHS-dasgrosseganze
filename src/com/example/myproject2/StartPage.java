@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import model.DoodleEvent;
+import model.DoodleNotification;
 import model.Eingeladen;
 import model.User;
 
@@ -147,9 +148,14 @@ private TextField m_usersearch;
 		Button button_NewEvent = new Button("New Event");
 		button_NewEvent.addClickListener(new PinkShoes(navigator,
 				Variables.NEWEVENT, m_username, m_userid));
+		
+		Button button_ShowNotification = new Button("Show old Notifications");
+		button_ShowNotification.addClickListener(new PinkShoes(navigator,
+				Variables.SHOWNOTIFICATIONS, m_username, m_userid));
 
 		// adding buttons
 		this.addComponent(button_NewEvent);
+		this.addComponent(button_ShowNotification);
 
 		// LogOut Button
 		Button button_LogOut = new Button("Log Out");
@@ -187,8 +193,17 @@ private TextField m_usersearch;
 	public void executeQuerys() {
 		m_events = QueryHelper.executeId(Variables.GETEVENT_BYADMIN, m_userid);
 
-		m_invitedTo = QueryHelper.executeId("getEingeladenforSpecificUser",
-				m_userid);
+		m_invitedTo = QueryHelper.executeId("getEingeladenforSpecificUser",m_userid);
+		
+		List <DoodleNotification> m_notifications =  QueryHelper.executeId(Variables.GETNOTIFICATION_BYUSERID,m_userid);
+	
+		for (DoodleNotification dn : m_notifications ){
+			if(!dn.isGeliefert()){
+				Notification.show(dn.getText(),Notification.TYPE_WARNING_MESSAGE);
+				dn.setGeliefert(true);
+				QueryHelper.update(dn);
+			}
+		}
 	}
 
 	@Override
