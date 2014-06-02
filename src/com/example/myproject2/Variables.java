@@ -35,6 +35,7 @@ public class Variables {
 	public static final String GETABGESTIMMT_BYIDEVENT = "getAbgestimmtbyuserevent";
 	public static final String GETZEIT_BYEVENTID = "getTimePossibilitesforSpecificEvent";
 	public static final String GETEINGELADEN_BYEVENTID = "getEingeladenforSpecificEvent";
+	public static final String GETABGESTIMMT_BYEVENTID = "getAbgestimmtbyevent";
 
 	
 

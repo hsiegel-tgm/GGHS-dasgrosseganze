@@ -17,6 +17,7 @@ import com.example.myproject2.Variables;
 
 @NamedQueries({
 	@NamedQuery(name=Variables.GETABGESTIMMT_BYUSER,query="FROM Abgestimmt a WHERE a.user.ID = :id"),
+	@NamedQuery(name=Variables.GETABGESTIMMT_BYEVENTID,query="FROM Abgestimmt a WHERE a.zeit.ID = :id"), //TODO zeit id
 	@NamedQuery(name=Variables.GETABGESTIMMT,query="FROM Abgestimmt a"),
 	@NamedQuery(name=Variables.GETWERTUNG,query="SELECT a.wertung FROM Abgestimmt a WHERE a.user.ID = :userid AND a.zeit.ID = :zeitid"),
 	@NamedQuery(name=Variables.GETABGESTIMMT_BYIDEVENT,query="FROM Abgestimmt a WHERE a.user.ID = :userid AND a.zeit.ID = :zeitid"),

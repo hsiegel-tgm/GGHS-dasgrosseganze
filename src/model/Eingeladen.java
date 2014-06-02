@@ -10,10 +10,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
+import com.example.myproject2.Variables;
+
 
 
 @NamedQueries({
-	@NamedQuery(name="getEingeladenforSpecificEvent",query="FROM Eingeladen ein WHERE ein.event.ID = :id"),
+	@NamedQuery(name=Variables.GETEINGELADEN_BYEVENTID,query="FROM Eingeladen ein WHERE ein.event.ID = :id"),
 	@NamedQuery(name="getEingeladenforSpecificUser",query="SELECT ein.event FROM Eingeladen ein WHERE ein.user.ID = :id"),
 })
 

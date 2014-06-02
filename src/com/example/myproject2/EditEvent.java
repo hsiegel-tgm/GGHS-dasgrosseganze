@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import model.Abgestimmt;
 import model.DoodleEvent;
 import model.Eingeladen;
 import model.User;
@@ -71,6 +72,8 @@ public class EditEvent extends VerticalLayout implements View {
 
 	private Vector<User> usr = new Vector<User>();
 	private List<User> m_allusers;
+	private List<Abgestimmt> m_usersabgestimmt;
+
 	private Button m_save, m_plus, m_minus;
 
 	private String m_username, m_userid, m_eventid;
@@ -78,6 +81,8 @@ public class EditEvent extends VerticalLayout implements View {
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
 
+	private PopupDateField fix;
+	
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
 
@@ -109,11 +114,12 @@ public class EditEvent extends VerticalLayout implements View {
 		textfield_eventname = new TextField();
 		textfield_eventname.setRequiredError("Please set the Eventname");
 		textfield_eventname.setValue(m_event.getName());
-
+		textfield_eventname.setRequired(true);
 		// Eventort
 		textfield_eventort = new TextField();
 		textfield_eventort.setValue(m_event.getOrt());
 		textfield_eventort.setRequiredError("Please set the Event Location");
+		textfield_eventort.setRequired(true);
 
 		this.addComponent(new Label("Eventname:"));
 		this.addComponent(textfield_eventname);
@@ -126,11 +132,7 @@ public class EditEvent extends VerticalLayout implements View {
 		m_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 		Button button_logout = new Button(Variables.LOGOUT);
-		m_plus = new Button("+");
-		m_minus = new Button("-");
-
-		this.addComponent(m_plus);
-		this.addComponent(m_minus);
+	
 		this.addComponent(m_save);
 		this.addComponent(button_back);
 		this.addComponent(button_logout);
@@ -146,15 +148,13 @@ public class EditEvent extends VerticalLayout implements View {
 
 	public void zeiten() {
 		for (Zeit z : m_times) {
-			PopupDateField p = new PopupDateField();
-			p.setValue(z.getAnfang());
-			p.setImmediate(true);
-			p.setTimeZone(TimeZone.getTimeZone("UTC"));
-			p.setLocale(Locale.US);
-			p.setResolution(Resolution.HOUR);
-			this.addComponent(p);
-			popupDateField_zeiten.add(p);
+			newZeit(z.getAnfang());
 		}
+		m_plus = new Button("+");
+		m_minus = new Button("-");
+
+		this.addComponent(m_plus);
+		this.addComponent(m_minus);
 	}
 
 	public void userinvitedwuuuhu() {
@@ -187,6 +187,7 @@ public class EditEvent extends VerticalLayout implements View {
 	}
 
 	public void userinvitedbasic() {
+		//TODO event anzeigen? :)
 		Table m_tableUsers = new Table("All Users");
 		m_tableUsers.setSelectable(false);
 		m_tableUsers.setMultiSelect(false);
@@ -196,28 +197,60 @@ public class EditEvent extends VerticalLayout implements View {
 		m_tableUsers.addContainerProperty("User ID", Long.class, null);
 		m_tableUsers.addContainerProperty("Username", String.class, null);
 		m_tableUsers.addContainerProperty("Email", String.class, null);
-		//m_tableUsers.addContainerProperty("Ausladen", Button.class, null); //TODO
 
-		
 		int i = 0;
 		for (Eingeladen e : m_usersinvited) {
 			User u = e.getUser();
-			Button b = new Button("ausladen");
-			m_tableUsers.addItem(new Object[] { u.getID() , u.getUsername() , u.geteMail(),b}, new Integer(i));
+			m_tableUsers.addItem(new Object[] { u.getID() , u.getUsername() , u.geteMail()}, new Integer(i));
 			i++;
-			b.addClickListener(new Button.ClickListener(){
-				@Override
-				public void buttonClick(ClickEvent event) {
-					Notification.show("helllo");					
-				}
-			});
 		}
 		
-	
 		this.addComponent(m_tableUsers);
-
 	}
 
+	public void newZeit(Date d){	
+		PopupDateField p = new PopupDateField();
+		p.setValue(d);
+		p.setImmediate(true);
+		p.setTimeZone(TimeZone.getTimeZone("UTC"));
+		p.setLocale(Locale.US);
+		p.setResolution(Resolution.HOUR);
+		this.addComponent(p);
+		popupDateField_zeiten.add(p);
+	}
+	
+	public Boolean usershavevoted(){
+		Zeit z = m_times.get(0);
+		List <Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue()+"");
+		if(a==null)
+			return false;
+		if(a.size()==m_usersinvited.size())
+			return true;
+		else 
+			return null;
+	}
+	
+	public void datefix(){
+		Boolean b = usershavevoted();
+		
+		if (b != null && b.booleanValue()){
+		//Zeit z = m_times.get(0);
+		//List <Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue()+"");
+		//if(a!=null){
+		//	if(a.size()==m_usersinvited.size()){
+				this.addComponent(new Label("FIX DATUM:"));
+				fix = new PopupDateField();
+				fix.setValue(new Date());
+				fix.setImmediate(true);
+				fix.setTimeZone(TimeZone.getTimeZone("UTC"));
+				fix.setLocale(Locale.US);
+				fix.setResolution(Resolution.HOUR);
+				this.addComponent(fix);
+		//	}
+		//}
+		}
+	}
+	
 	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
@@ -228,22 +261,23 @@ public class EditEvent extends VerticalLayout implements View {
 
 		buttons();
 
-		zeiten();
+		Boolean b = usershavevoted();
+		
+		if (b != null && b.booleanValue()){
+			datefix();
+		}
+
+		if (b != null && !b.booleanValue()){
+			zeiten();
+		}
 		
 		userinvitedbasic();
+
 
 		// Plus Button Listener
 		m_plus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-				PopupDateField p = new PopupDateField();
-				// New Date Possibilities
-				p.setValue(new Date());
-				p.setImmediate(true);
-				p.setTimeZone(TimeZone.getTimeZone("MEZ"));
-				p.setLocale(Locale.US);
-				p.setResolution(Resolution.MINUTE);
-				layout.addComponent(p);
-				popupDateField_zeiten.add(p);
+				newZeit(new Date());				
 			}
 		});
 
@@ -252,8 +286,7 @@ public class EditEvent extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				if (popupDateField_zeiten.size() > 1) {
 					// remove date possibility
-					PopupDateField p = popupDateField_zeiten
-							.elementAt(popupDateField_zeiten.size() - 1);
+					PopupDateField p = popupDateField_zeiten.elementAt(popupDateField_zeiten.size() - 1);
 					EditEvent.this.removeComponent(p);
 					popupDateField_zeiten.remove(p);
 				}
@@ -267,10 +300,9 @@ public class EditEvent extends VerticalLayout implements View {
 				String name = textfield_eventname.getValue();
 				String ort = textfield_eventort.getValue();
 
-				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends
-						.getValue();
-				Vector vector_invitedUsers = new Vector();
-				vector_invitedUsers.addAll(invitedUsers);
+//				Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
+//				Vector vector_invitedUsers = new Vector();
+//				vector_invitedUsers.addAll(invitedUsers);
 
 				// Validation
 				boolean valid = true;
@@ -285,39 +317,37 @@ public class EditEvent extends VerticalLayout implements View {
 						// checking if date lies in the past
 						Date d = popupDateField_zeiten.elementAt(i).getValue();
 						if (d.before(new Date())) {
-							popupDateField_zeiten.elementAt(i)
-									.setValidationVisible(true);
-							layout.addComponent(new Label(
-									"Please set a Future Date - Date Input Field number:"
-											+ (i + 1)));
+							popupDateField_zeiten.elementAt(i).setValidationVisible(true);
+							Notification.show("Please set a Future Date - Date Input Field number:"+ (i + 1),Notification.TYPE_WARNING_MESSAGE);
 							valid = false;
 						}
 					}
 
-					// Checking if there is at least one User invited
-					if (vector_invitedUsers.size() == 0) {
-						valid = false;
-						layout.addComponent(new Label(
-								"Please Invite at least one User"));
-					}
+//					// Checking if there is at least one User invited
+//					if (vector_invitedUsers.size() == 0) {
+//						valid = false;
+//						layout.addComponent(new Label(
+//								"Please Invite at least one User"));
+//					}
 
 				} catch (InvalidValueException e) {
 					valid = false;
-					layout.addComponent(new Label(e.getMessage()));
+					Notification.show(e.getMessage(),Notification.TYPE_WARNING_MESSAGE);
 				}
-
+				
 				DoodleEvent eve = m_event;
 
+				if(fix!=null){
+					System.out.println("saving date:"+fix.getValue());
+					eve.setFixDatum(fix.getValue());
+				}
+
 				eve.setName(name);
-				eve.setName(ort);
+				eve.setOrt(ort);
 
 				QueryHelper.update(eve);
-				// t2.commit();
-				// session2.close();
+				
 
-				// QueryHelper.saveObject(eve);
-
-				//
 				// // saving all the Dates
 				// for (int i = 0; i < popupDateField_zeiten.size(); i++) {
 				// // checking if date lies in the Future
@@ -366,6 +396,8 @@ public class EditEvent extends VerticalLayout implements View {
 		m_allusers = QueryHelper.executeBasic(Variables.GETUSER);
 		
 		m_usersinvited = QueryHelper.executeId(Variables.GETEINGELADEN_BYEVENTID,m_event.getID()+"");
+		
+		m_usersabgestimmt = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID,m_event.getID()+"");
 
 		// m_comments = QueryHelper.executeId(Variables.GETKOMMENTS,
 		// m_event.getID()+"");
