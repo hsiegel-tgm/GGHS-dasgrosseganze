@@ -181,4 +181,24 @@ public class QueryHelper {
 		}
 	
 	}
+	
+	public static Boolean usershavevoted(DoodleEvent e) {
+		List <Zeit> times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,
+				e.getID() + "");
+		List <Eingeladen> usersinvited = QueryHelper.executeId(
+				Variables.GETEINGELADEN_BYEVENTID, e.getID() + "");
+		
+		Zeit z = times.get(0);
+		List<Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
+		
+		if (a == null)
+			return null;
+		else if (a.size() == usersinvited.size())
+			return true;
+		else
+			return false;
+	}
+	
+	
+	
 }

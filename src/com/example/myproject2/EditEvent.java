@@ -241,17 +241,17 @@ public class EditEvent extends VerticalLayout implements View {
 		popupDateField_zeiten.add(p);
 	}
 
-	public Boolean usershavevoted() {
-		Zeit z = m_times.get(0);
-		List<Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
-		
-		if (a == null)
-			return null;
-		else if (a.size() == m_usersinvited.size())
-			return true;
-		else
-			return false;
-	}
+//	public Boolean usershavevoted() {
+//		Zeit z = m_times.get(0);
+//		List<Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
+//		
+//		if (a == null)
+//			return null;
+//		else if (a.size() == m_usersinvited.size())
+//			return true;
+//		else
+//			return false;
+//	}
 
 	public void datefix() {
 		this.addComponent(new Label("FIX DATUM:"));
@@ -274,7 +274,7 @@ public class EditEvent extends VerticalLayout implements View {
 
 		buttons();
 
-		Boolean b = usershavevoted();
+		Boolean b = QueryHelper.usershavevoted(m_event);
 		System.out.println("B::" + b.booleanValue());
 
 		if (b != null && b.booleanValue()) {
@@ -347,7 +347,7 @@ public class EditEvent extends VerticalLayout implements View {
 				QueryHelper.notificate(eve, "Dear User, the event " +eve.getName()+" just got edited");
 
 				//TODO schirch arg nein alles schleeeecht
-				if(usershavevoted() != null && !usershavevoted()){
+				//if(usershavevoted() != null && !usershavevoted()){
 //					for(Zeit z : m_times){
 //						QueryHelper.delete(z);
 //					}
@@ -359,7 +359,7 @@ public class EditEvent extends VerticalLayout implements View {
 //						// saving the time
 //						QueryHelper.update(eventTime);
 //					}
-				}
+				//}
 
 				
 				

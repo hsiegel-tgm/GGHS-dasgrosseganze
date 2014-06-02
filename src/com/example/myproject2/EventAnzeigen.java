@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 
 import model.Abgestimmt;
 import model.DoodleEvent;
+import model.DoodleNotification;
 import model.Eingeladen;
 import model.Kommentar;
 import model.User;
@@ -238,9 +239,13 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		int inc=0;
 		
 		for(Zeit z : m_times){
-			//Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
 			QueryHelper.saveAbgestimmt(z,user,checkboxes.elementAt(inc).getValue());
 			++inc;
+			Boolean b = QueryHelper.usershavevoted(m_event);
+			if(b!=null&&b.booleanValue()){
+				DoodleNotification dn = new DoodleNotification(m_event.getAdmin(),"all users have voted - "+m_event.getName());
+				QueryHelper.saveObject(dn);
+			}
 		}
 		Notification.show("saved yout choices... ");
 	}
