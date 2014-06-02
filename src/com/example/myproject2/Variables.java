@@ -33,7 +33,10 @@ public class Variables {
 	public static final String GETUSER_BYID = "getSpecificUser";
 	public static final String GETUSER_BYNAME = "getSpecificUserbyName";
 	public static final String GETABGESTIMMT_BYIDEVENT = "getAbgestimmtbyuserevent";
+	public static final String GETZEIT_BYEVENTID = "getTimePossibilitesforSpecificEvent";
+	public static final String GETEINGELADEN_BYEVENTID = "getEingeladenforSpecificEvent";
 
+	
 
 //	public static final String GETALLEVENTS = "getEvents";
 //	public static final String GETALLEVENTS = "getEvents";
