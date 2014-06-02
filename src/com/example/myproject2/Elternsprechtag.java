@@ -19,6 +19,7 @@ import model.Kommentar;
 import model.User;
 import model.Zeit;
 
+import com.google.gwt.user.client.ui.RadioButton;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -53,7 +54,7 @@ public class Elternsprechtag extends VerticalLayout implements View {
 	private String m_username, m_userid, m_eventque;
 	private User user;
 	private boolean m_isadmin;
-	private Vector<RadioButton> checkboxes;
+	private Vector<RadioButton> radiobuttons;
 	private DoodleEvent m_event;
 	private List<Zeit> m_times;
 	private List<Eingeladen> m_eingeladene;
@@ -84,10 +85,10 @@ public class Elternsprechtag extends VerticalLayout implements View {
 		table.addContainerProperty("User", String.class, null);
 		
 		for (Zeit z : m_times) {
-		   table.addContainerProperty(z.getAnfang() + "", CheckBox.class, null); 
+		   table.addContainerProperty(z.getAnfang() + "", RadioButton.class, null); 
 		}
 
-		checkboxes = new Vector<CheckBox>();		
+		radiobuttons = new Vector<RadioButton>();		
 		Object[] o2 = new Object[m_times.size()+1];
 
 		int inc = 1;
@@ -100,16 +101,17 @@ public class Elternsprechtag extends VerticalLayout implements View {
 					Boolean wertung = QueryHelper.getWertung(user.getID().longValue()+"", z.getID().longValue()+"");
 					if(wertung==null)
 						wertung = false;
-					CheckBox cbx = new CheckBox("", wertung);
+					RadioButton cbx = new RadioButton("");
+					if(wertung){
+						cbx.setChecked(true);
+					}
 					if(m_event.getFixDatum()!=null){
 						cbx.setEnabled(false);
 					}
-					checkboxes.add(cbx);
+					radiobuttons.add(cbx);
 					o2[looper]=cbx;
 					looper++;
 				}
-				//table.addItem(o,inc);
-				//loop durch zeiten
 			}
 			else{
 				User u = e.getUser();
@@ -119,7 +121,10 @@ public class Elternsprechtag extends VerticalLayout implements View {
 				for (Zeit z : m_times) {
 					Boolean wertung = QueryHelper.getWertung(u.getID().longValue()+"", z.getID().longValue()+"");
 					if(wertung!=null){
-						CheckBox cbx2 = new CheckBox("", wertung );
+						RadioButton cbx2 = new RadioButton("");
+						if(wertung){
+							cbx2.setChecked(true);
+						}
 						cbx2.setEnabled(false);
 						o[i]=cbx2;
 					}
@@ -241,7 +246,7 @@ public class Elternsprechtag extends VerticalLayout implements View {
 		int inc=0;
 		
 		for(Zeit z : m_times){
-			QueryHelper.saveAbgestimmt(z,user,checkboxes.elementAt(inc).getValue());
+			QueryHelper.saveAbgestimmt(z,user,radiobuttons.elementAt(inc).getValue());
 			++inc;
 			Boolean b = QueryHelper.usershavevoted(m_event);
 			if(b!=null&&b.booleanValue()){

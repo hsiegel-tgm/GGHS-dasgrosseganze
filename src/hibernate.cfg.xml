@@ -16,7 +16,7 @@
 	
 	
 	
-		<property name="connection.pool_size">5</property>
+		<property name="connection.pool_size">15</property>
 		
 
 		<property name="show_sql">true</property>
@@ -31,9 +31,9 @@
 <mapping class="model.DoodleEvent"/>
 <mapping class="model.Eingeladen"/>
 <mapping class="model.Abgestimmt"/>
-<mapping class="model.Notification"/>
 <mapping class="model.Zeit"/>
 <mapping class="model.Kommentar"/>
+<mapping class="model.DoodleNotification"/>
 
 
 
