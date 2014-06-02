@@ -100,36 +100,51 @@ public class EditEvent extends VerticalLayout implements View {
 		this.navigator = nav;
 	}
 
-	void init() {
-		final VerticalLayout layout = this;
-		layout.setMargin(true);
-
-		layout.addComponent(new Label("EDITING EVENT: "+m_event.getName()));
-		
+	public void textfields(){
 		// Eventname
 		textfield_eventname = new TextField();
-		textfield_eventname.setRequired(true);
 		textfield_eventname.setRequiredError("Please set the Eventname");
-
 		textfield_eventname.setValue(m_event.getName());
 		
 		// Eventort
 		textfield_eventort = new TextField();
 		textfield_eventort.setValue(m_event.getOrt());
-		
-		// textfield_eventort.setValidationVisible(true);
 		textfield_eventort.setRequiredError("Please set the Event Location");
-
+		
+		this.addComponent(new Label("Eventname:"));
+		this.addComponent(textfield_eventname);
+		this.addComponent(new Label("Eventlocation:"));
+		this.addComponent(textfield_eventort);
+	}
+	
+	public void buttons(){
 		// Buttons
 		Button button_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 		Button button_logout = new Button(Variables.LOGOUT);
 		Button button_plus = new Button("+");
-		Button button_minus = new Button("-");
+		Button button_minus = new Button("-"); //TODO shiit
 
+		this.addComponent(button_plus);
+		this.addComponent(button_minus);
+		this.addComponent(button_save);
+		this.addComponent(button_back);
+		this.addComponent(button_logout);
+	}
+	
+	public void init() {
+		final VerticalLayout layout = this;
+		layout.setMargin(true);
+
+		layout.addComponent(new Label("EDITING EVENT: "+m_event.getName()));
+		
+		textfields();
+		
+		buttons();
+		
 		// Initialize first DateField
 		popupDateField_zeiten.add(new PopupDateField());
-		popupDateField_zeiten.elementAt(0).setValue(new Date());
+		popupDateField_zeiten.elementAt(0).setValue(new Date()); //TODO
 		popupDateField_zeiten.elementAt(0).setImmediate(true);
 		popupDateField_zeiten.elementAt(0).setTimeZone(
 				TimeZone.getTimeZone("UTC"));
@@ -174,21 +189,9 @@ public class EditEvent extends VerticalLayout implements View {
 		t.commit();
 		session.close();
 
-		// Adding the Components
-		Label l = new Label("NEW EVENT");
-		l.setSizeFull();
-		layout.addComponent(l);
-		layout.addComponent(new Label("Eventname:"));
-		layout.addComponent(textfield_eventname);
-		layout.addComponent(new Label("Eventlocation:"));
-		layout.addComponent(textfield_eventort);
 		layout.addComponent(popupDateField_zeiten.elementAt(0));
 		layout.addComponent(twinColSet_friends);
-		layout.addComponent(button_plus);
-		layout.addComponent(button_minus);
-		layout.addComponent(button_save);
-		layout.addComponent(button_back);
-		layout.addComponent(button_logout);
+	
 
 		// Back Button Listener
 		button_back.addClickListener(new PinkShoes(navigator,
