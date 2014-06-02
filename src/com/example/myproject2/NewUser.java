@@ -151,7 +151,7 @@ public class NewUser extends VerticalLayout implements View {
 					//String pw = RandomStringUtils.randomAlphanumeric(25);
 					String pw = "123"; //TODO aendern irgendwann :P
 					try {
-						SendEmail.send("hannah.k.siegel@gmail.com","Your password", "Thank you for registering at TheBigWhole. Your password is "+pw);
+						SendEmail.send("hannah.k.siegel@gmail.com","Your password", "Thank you for registering at TheBigWhole. Your password is "+pw+"(testing password. TODO)");
 					} catch (AddressException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -164,7 +164,7 @@ public class NewUser extends VerticalLayout implements View {
 					
 					if(QueryHelper.saveObject(u)){
 						// Notification
-						Notification.show("Successful - You have been registered.");
+						Notification.show("Sended your password via email ...");
 					}
 				}
 			}

@@ -70,6 +70,30 @@ public class QueryHelper {
 		}
 		return b;
 	}
+	
+	public static List<Abgestimmt> executeAbstimmung(String userID, String zeitID) {
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
+		q2.setParameter("userid", Long.parseLong(userID));
+		q2.setParameter("zeitid", Long.parseLong(zeitID));
+		List<Abgestimmt> res = q2.list();
+		t.commit();
+		session.close();
+		
+		return res;
+
+	}
+	public static void delete(Object o) {
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		session.delete(o);
+		t.commit();
+		session.close();
+	}
+	
 
 	public static void saveAbgestimmt(Object o) {
 		Abgestimmt a = (Abgestimmt) o;

@@ -18,7 +18,7 @@ public class ShowQueryResult extends VerticalLayout implements View {
 
 	private FatNavigator navigator;
 	private String m_username, m_userid, m_startwith;
-	private Table m_myevents;
+	private Table m_tableUsers;
 	private List<User> m_users;
 	private TextField m_usersearch;
 	
@@ -27,16 +27,15 @@ public class ShowQueryResult extends VerticalLayout implements View {
 	}
 
 	public void initializingTables() {
-		// myevents
-		m_myevents = new Table("All Users");
-		m_myevents.setSelectable(false);
-		m_myevents.setMultiSelect(false);
-		m_myevents.setImmediate(true);
-		m_myevents.setColumnReorderingAllowed(true);
-		m_myevents.setColumnCollapsingAllowed(true);
-		m_myevents.addContainerProperty("User ID", Long.class, null);
-		m_myevents.addContainerProperty("Username", String.class, null);
-		m_myevents.addContainerProperty("Email", String.class, null);
+		m_tableUsers = new Table("All Users");
+		m_tableUsers.setSelectable(false);
+		m_tableUsers.setMultiSelect(false);
+		m_tableUsers.setImmediate(true);
+		m_tableUsers.setColumnReorderingAllowed(true);
+		m_tableUsers.setColumnCollapsingAllowed(true);
+		m_tableUsers.addContainerProperty("User ID", Long.class, null);
+		m_tableUsers.addContainerProperty("Username", String.class, null);
+		m_tableUsers.addContainerProperty("Email", String.class, null);
 	}
 
 	public void init() {
@@ -47,11 +46,11 @@ public class ShowQueryResult extends VerticalLayout implements View {
 		
 		int i = 0;
 		for (User u : m_users) {
-			m_myevents.addItem(new Object[] { u.getID() , u.getUsername() , u.geteMail()}, new Integer(i));
+			m_tableUsers.addItem(new Object[] { u.getID() , u.getUsername() , u.geteMail()}, new Integer(i));
 			i++;
 		}
 
-		layout.addComponent(m_myevents);
+		layout.addComponent(m_tableUsers);
 
 		addingButtons();
 	}

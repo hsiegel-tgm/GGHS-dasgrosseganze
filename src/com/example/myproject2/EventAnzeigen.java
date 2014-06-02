@@ -55,7 +55,8 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	private List<Zeit> m_times;
 	private List<Eingeladen> m_eingeladene;
 	private List<Kommentar> m_comments;
-
+	private Kommentar kommentar;
+	
 	protected EventAnzeigen(FatNavigator nav, Master m) {
 		this.m_navigator = nav;
 	}
@@ -127,6 +128,14 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		for(Kommentar k : m_comments){
 			layout.addComponent(new Label("von: "+k.getUser().getUsername() + "   gepostet: "+k.getGepostet()));
 			layout.addComponent(new Label("           "+k.getText()));
+			Button button_deleteComment = new Button ("-");
+			layout.addComponent(button_deleteComment);
+			kommentar = k;
+			button_deleteComment.addClickListener(new Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					QueryHelper.delete(kommentar);					
+				}});
 		}
 		Button button_newcomment = new Button("New Comment");
 		layout.addComponent(button_newcomment);
@@ -140,7 +149,9 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		if (m_isadmin) {
 			// D Button
 			Button button_delete = new Button("Delete This Event");
-			layout.addComponent(button_delete);
+			Button button_edit = new Button("Edit This Event");
+
+			layout.addComponent(button_edit);
 
 			button_delete.addClickListener(new Button.ClickListener() {
 				@Override
@@ -158,7 +169,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 						session.delete(z);
 					}
 
-					//session.delete(m_event); TODO!!
+					//session.delete(m_event);// TODO!!
 
 					t.commit();
 					session.close();
@@ -167,6 +178,14 @@ public class EventAnzeigen extends VerticalLayout implements View {
 							+ "/" + m_userid);
 				}
 			});
+			
+			button_edit.addClickListener(new Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					Notification.show("umleiteeen",Notification.TYPE_ERROR_MESSAGE); //TODO
+				}
+			});
+			
 		}
 	
 		addingButtons(layout);
@@ -193,7 +212,6 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		Button button_back = new Button("Back");
 		button_back.addClickListener(new PinkShoes(m_navigator,
 			Variables.STARTPAGE, m_username, m_userid));
-		
 		// LogOut Button
 		Button button_save = new Button("Save");
 		button_save.addClickListener(new Button.ClickListener() {
@@ -204,20 +222,34 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		});
 		
 		// adding buttons
-		layout.addComponent(button_save);
+		if(!m_isadmin)
+			layout.addComponent(button_save);
 		layout.addComponent(button_back);
 		layout.addComponent(button_LogOut);
 	}
 	
 	public void save(){
 		int inc=0;
+		
 		for(Zeit z : m_times){
-			Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
-			QueryHelper.saveAbgestimmt(a);
+			
+			Boolean wertung = QueryHelper.getWertung(user.getID().longValue()+"", z.getID().longValue()+"");
+
+			if(wertung == null){
+				Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
+				QueryHelper.saveAbgestimmt(a);
+			}
+			else{
+				List <Abgestimmt> abg = QueryHelper.executeAbstimmung(user.getID().longValue()+"", z.getID().longValue()+"");
+				//QueryHelper.delete(abg.get(0)); //TODO
+				Abgestimmt a = new Abgestimmt(user, z, checkboxes.elementAt(inc).getValue());
+				QueryHelper.saveAbgestimmt(a);
+				Notification.show("Neue abstimmung wurde gespeichert.",Notification.TYPE_ERROR_MESSAGE);
+			}
 			++inc;
 		}
-		//Notification n = new Notification("Successful","Saves");
-		this.addComponent(new Label("saved your choices.."));
+		Notification.show("saved yout choices... ");
+		//this.addComponent(new Label("saved your choices.."));
 	}
 	
 	//IoC Prinzip

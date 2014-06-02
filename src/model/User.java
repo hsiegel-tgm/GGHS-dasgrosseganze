@@ -38,7 +38,6 @@ import com.example.myproject2.Variables;
 	@NamedQuery(name="getUsers",query="FROM User u order by u.ID"),
 	@NamedQuery(name=Variables.GETUSER_BYID,query="FROM User u WHERE  u.ID = :id"),
 	@NamedQuery(name=Variables.GETUSER_BYNAME,query="FROM User u WHERE  u.username like :id"),
-
 })
 
 
