@@ -71,6 +71,8 @@ public class EditEvent extends VerticalLayout implements View {
 
 	private Vector<User> usr = new Vector<User>();
 
+	private Button m_save, m_plus, m_minus;
+	
 	private String m_username, m_userid, m_eventid;
 
 	// Textfields
@@ -119,17 +121,25 @@ public class EditEvent extends VerticalLayout implements View {
 	
 	public void buttons(){
 		// Buttons
-		Button button_save = new Button(Variables.SAVE);
+		Button m_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 		Button button_logout = new Button(Variables.LOGOUT);
-		Button button_plus = new Button("+");
-		Button button_minus = new Button("-"); //TODO shiit
+		Button m_plus = new Button("+");
+		Button m_minus = new Button("-"); //TODO shiit
 
-		this.addComponent(button_plus);
-		this.addComponent(button_minus);
-		this.addComponent(button_save);
+		this.addComponent(m_plus);
+		this.addComponent(m_minus);
+		this.addComponent(m_save);
 		this.addComponent(button_back);
 		this.addComponent(button_logout);
+		
+		// Back Button Listener
+				button_back.addClickListener(new PinkShoes(navigator,
+						Variables.STARTPAGE, m_username, m_userid));
+
+				// Logout Button Listener
+				button_logout.addClickListener(new PinkShoes(navigator,
+						Variables.LOGIN, m_username, m_userid));
 	}
 	
 	public void init() {
@@ -193,16 +203,10 @@ public class EditEvent extends VerticalLayout implements View {
 		layout.addComponent(twinColSet_friends);
 	
 
-		// Back Button Listener
-		button_back.addClickListener(new PinkShoes(navigator,
-				Variables.STARTPAGE, m_username, m_userid));
-
-		// Logout Button Listener
-		button_logout.addClickListener(new PinkShoes(navigator,
-				Variables.LOGIN, m_username, m_userid));
+		
 
 		// Plus Button Listener
-		button_plus.addClickListener(new Button.ClickListener() {
+		m_plus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				PopupDateField p = new PopupDateField();
 				// New Date Possibilities
@@ -217,7 +221,7 @@ public class EditEvent extends VerticalLayout implements View {
 		});
 
 		// Minus Button Listener
-		button_minus.addClickListener(new Button.ClickListener() {
+		m_minus.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				if (popupDateField_zeiten.size() > 1) {
 					//remove date possibility
@@ -229,7 +233,7 @@ public class EditEvent extends VerticalLayout implements View {
 		});
 
 		// Send Button Listener
-		button_save.addClickListener(new Button.ClickListener() {
+		m_save.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				// fetching values
 				String name = textfield_eventname.getValue();
