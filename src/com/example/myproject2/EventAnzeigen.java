@@ -179,9 +179,12 @@ public class EventAnzeigen extends VerticalLayout implements View {
 				}
 			});
 			
+			button_edit.addClickListener(new PinkShoes(m_navigator, Variables.EDITEVENT, m_username, m_userid, m_event.getID().longValue()+""));
+			
 			button_edit.addClickListener(new Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
+					
 					Notification.show("umleiteeen",Notification.TYPE_ERROR_MESSAGE); //TODO
 				}
 			});

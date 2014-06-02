@@ -266,58 +266,51 @@ public class EditEvent extends VerticalLayout implements View {
 					valid = false;
 					layout.addComponent(new Label(e.getMessage()));
 				}
+				Session session2 = InitSession.getSession().openSession();
+				Transaction t2 = session2.beginTransaction();
+				t2.begin();
+				//DoodleEvent eve = (DoodleEvent)session2.get(DoodleEvent.class, m_event.getID()); 
+				DoodleEvent eve = m_event; 
 
-				m_event.setName(name);
+					eve.setName(name);
+					session2.update(eve);
+				 t2.commit();
+				 session2.close();
 				
-				QueryHelper.save(m_event);
+				//QueryHelper.saveObject(eve);
 				
-				//if (valid) {
-					// Database Connection
-					Session session = InitSession.getSession().openSession();
-					Transaction t = session.beginTransaction();
-					t.begin();
-
-					// Saving Event
-					session.save(m_event);
-
-					// saving all the Dates
-					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
-						// checking if date lies in the Future
-						Date d = popupDateField_zeiten.elementAt(i).getValue();
-						if (d.after(new Date())) {
-							Zeit eventTime = new Zeit(d, d, e); // TODO endzeit
-							// saving the time
-							session.save(eventTime);
-						}
-					}
-
-					t.commit();
-					session.close();
+//
+//					// saving all the Dates
+//					for (int i = 0; i < popupDateField_zeiten.size(); i++) {
+//						// checking if date lies in the Future
+//						Date d = popupDateField_zeiten.elementAt(i).getValue();
+//						if (d.after(new Date())) {
+//							Zeit eventTime = new Zeit(d, d, e); // TODO endzeit
+//							// saving the time
+//							session.save(eventTime);
+//						}
+//					}
 
 					
-//					// fetching invited Users
-//					Collection<?> invitedUsers = (Collection<?>) twinColSet_friends.getValue();
-//					//fetching invited Users
-//					Vector vector_invitedUsers = new Vector();
-//					vector_invitedUsers.addAll(invitedUsers);
 
-					//Database connection
-					Session session2 = InitSession.getSession().openSession();
-					Transaction t2 = session2.beginTransaction();
-					t2.begin();
 
-					//Saving invited users into DB
-					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
-						//fetching number of added User
-						int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
-						
-						//saving into DB
-						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);						
-						session2.save(eingeladen);
-					}
-
-					t2.commit();
-					session2.close();
+//					//Database connection
+//					Session session2 = InitSession.getSession().openSession();
+//					Transaction t2 = session2.beginTransaction();
+//					t2.begin();
+//
+//					//Saving invited users into DB
+//					for (int j = 0; j < vector_invitedUsers.size(); ++j) {
+//						//fetching number of added User
+//						int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
+//						
+//						//saving into DB
+//						Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer), e);						
+//						session2.save(eingeladen);
+//					}
+//
+//					t2.commit();
+//					session2.close();
 
 					// Notification
 					layout.addComponent(new Label("Event was saved..."));
@@ -347,7 +340,7 @@ public class EditEvent extends VerticalLayout implements View {
 		m_username = event.getParameters().split("/")[0];
 		m_userid = event.getParameters().split("/")[1];
 		m_eventid = event.getParameters().split("/")[2];
-
+		executeQuerys();
 		init();
 	}
 }

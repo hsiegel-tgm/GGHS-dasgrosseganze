@@ -11,6 +11,7 @@ public class Variables {
 	public static final String REGISTER = "newuser";
 	public static final String STARTPAGE = "main";
 	public static final String NEWEVENT = "newevent";
+	public static final String EDITEVENT = "editevent";
 	public static final String COMMENT = "comment";
 	public static final String VOTE = "vote";
 	public static final String SHOWQUERYRESULT = "showresult";
