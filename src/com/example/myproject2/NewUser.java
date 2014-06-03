@@ -46,7 +46,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
-import org.apache.commons.lang.RandomStringUtils;
+//import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -133,7 +133,7 @@ public class NewUser extends VerticalLayout implements View {
 
 				if (username == null || username.equals("")) {
 					Notification.show("please set a username",
-							Notification.TYPE_WARNING_MESSAGE); //TODO dep
+							Notification.Type.WARNING_MESSAGE);
 					valid = false;
 				}
 				try {
@@ -141,7 +141,7 @@ public class NewUser extends VerticalLayout implements View {
 					emailAddr.validate();
 				} catch (AddressException ex) {
 					Notification.show("please set a valid email address",
-							Notification.TYPE_WARNING_MESSAGE); //TODO dep
+							Notification.Type.WARNING_MESSAGE);
 					valid = false;
 
 				}

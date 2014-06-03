@@ -17,11 +17,15 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -70,7 +74,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * */
 public class NewComment extends VerticalLayout implements View {
 	// Textfields
-	private TextField textfield_commentar;
+	private TextArea textfield_commentar;
 
 	// Navigator and master object
 	private FatNavigator m_navigator;
@@ -88,19 +92,43 @@ public class NewComment extends VerticalLayout implements View {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
 
-		// username Textfield
-		textfield_commentar = new TextField();
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
+		new Header(this,"New Comment", m_username, m_userid, m_navigator);
 
+		
+		// username Textfield
+		textfield_commentar = new TextArea();
+		textfield_commentar.addStyleName(Reindeer.TEXTFIELD_SMALL);
+		
 		// Send and Back Button
 		Button button_send = new Button("Save");
-		Button button_back = new Button("Zurueck");
+		Button button_back = new Button("Back");
 		button_send.setClickShortcut(KeyCode.ENTER, null);
 		button_back.setClickShortcut(KeyCode.ARROW_LEFT, null);
 
-		// adding layout to webpage
-		layout.addComponent(new Label("comment:"));
-		layout.addComponent(textfield_commentar);
-		
+		GridLayout gl = new GridLayout(3,6);
+		gl.setWidth("50%");
+		gl.setMargin(true);
+		gl.setSpacing(true);
+		gl.setColumnExpandRatio(0, 0.4f);
+		gl.setColumnExpandRatio(1, 0.1f);
+		gl.setColumnExpandRatio(1, 0.6f);
+		gl.addComponent(textfield_commentar);
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label("<span style=\"color: white;\">.</span>",ContentMode.HTML));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		GridLayout gl2 = new GridLayout(3,1);
+
+		gl2.addComponent(button_send);
+		gl2.addComponent(new Label("&nbsp&nbsp&nbsp&nbsp",ContentMode.HTML));
+		gl2.addComponent(button_back);
+
+		gl.addComponent(gl2);
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		this.addComponent(gl);
 
 		// Back Button Listener
 		button_back.addClickListener(new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin)); //TODO which ones?
@@ -108,40 +136,27 @@ public class NewComment extends VerticalLayout implements View {
 		// Send Button Listener
 		button_send.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
-
 				// fetching values
 				String text = textfield_commentar.getValue();
 
-
 				if (text == null || text.equals("")) {
 					Notification.show("please set a text",
-							Notification.TYPE_WARNING_MESSAGE); //TODO dep
+							Notification.Type.WARNING_MESSAGE); //TODO dep
 				}else{
 					// new User object
 					Kommentar k = new Kommentar(m_event, text, new Date(), m_user); 
-					System.out.println("try saving...");
 
 					if(QueryHelper.saveObject(k)){
 						// Notification
 						Notification.show("Saved...");
-
 						new PinkShoes(m_navigator, Variables.VOTE,m_username,m_userid,m_eventid,m_isadmin).navigation();
-
 					}
 				}
 			}
 		});
-		layout.addComponent(button_send);
-		layout.addComponent(button_back);
-
 	}
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param nav
-	 *            navigator object
-	 */
+	
 	protected NewComment(FatNavigator nav) {
 		this.m_navigator = nav;
 	}
@@ -151,9 +166,7 @@ public class NewComment extends VerticalLayout implements View {
 		
 		m_event = (DoodleEvent) l.get(0);
 		
-		m_user = (User) QueryHelper.executeId(Variables.GETUSER_BYID,  m_userid).get(0);	
-		
-		System.out.println("event:"+m_event.getName()+" user: "+m_user.getUsername());
+		m_user = (User) QueryHelper.executeId(Variables.GETUSER_BYID,  m_userid).get(0);			
 	}
 	
 	@Override

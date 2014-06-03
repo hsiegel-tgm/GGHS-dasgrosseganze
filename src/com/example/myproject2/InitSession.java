@@ -22,7 +22,7 @@ import org.hibernate.cfg.Configuration;
  * */
 public class InitSession {
 
-	 private static final SessionFactory sessionFactory = buildsf(); 
+	private static SessionFactory sessionFactory = buildsf(); 
 	 
 	
 	 public static SessionFactory buildsf() { 

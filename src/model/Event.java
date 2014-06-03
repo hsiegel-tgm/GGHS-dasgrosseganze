@@ -36,8 +36,9 @@ public class Event {
 	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
 	//private Collection<Zeit> zeiten = new Vector <Zeit>(); 
 	
-	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
-	private Collection<Kommentar> kommentare = new Vector <Kommentar>();
+	//TODO
+	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
+	//private Collection<Kommentar> kommentare = new Vector <Kommentar>();
 	
 	public Event(String name, Date datum, String ort, User admin) {
 		super();
@@ -46,10 +47,10 @@ public class Event {
 		this.ort = ort;
 		this.admin = admin;
 	}
-	
-	public void addKommentar(Kommentar k){
-		this.kommentare.add(k);
-	}
+//	
+//	public void addKommentar(Kommentar k){
+//		this.kommentare.add(k);
+//	}
 	
 	public String getName() {
 		return name;
@@ -91,10 +92,10 @@ public class Event {
 		this.fixDatum = fixDatum;
 	}
 
-	public Collection<Kommentar> getKommentare() {
-		return kommentare;
-	} 
-	
+//	public Collection<Kommentar> getKommentare() {
+//		return kommentare;
+//	} 
+//	
 	
 	
 }

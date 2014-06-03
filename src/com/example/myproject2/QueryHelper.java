@@ -41,13 +41,14 @@ public class QueryHelper {
 		session.close();
 		return res;
 	}
+
 	public static List executeLike(String queryname, String id) {
 		// Fetching usernames
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
 		t.begin();
 		Query q2 = (Query) session.getNamedQuery(queryname);
-		q2.setParameter("id", "%"+id+"%");
+		q2.setParameter("id", "%" + id + "%");
 		List<?> res = q2.list();
 		t.commit();
 		session.close();
@@ -74,21 +75,24 @@ public class QueryHelper {
 		}
 		return b;
 	}
-	
-	public static List<Abgestimmt> executeAbstimmung(String userID, String zeitID) {
+
+	public static List<Abgestimmt> executeAbstimmung(String userID,
+			String zeitID) {
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
 		t.begin();
-		Query q2 = (Query) session.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
+		Query q2 = (Query) session
+				.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
 		q2.setParameter("userid", Long.parseLong(userID));
 		q2.setParameter("zeitid", Long.parseLong(zeitID));
 		List<Abgestimmt> res = q2.list();
 		t.commit();
 		session.close();
-		
+
 		return res;
 
 	}
+
 	public static void delete(Object o) {
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
@@ -97,6 +101,7 @@ public class QueryHelper {
 		t.commit();
 		session.close();
 	}
+
 	public static void update(Object o) {
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
@@ -105,92 +110,75 @@ public class QueryHelper {
 		t.commit();
 		session.close();
 	}
-	
 
 	public static void saveAbgestimmt(Zeit z, User u, boolean value) {
 
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
 		t.begin();
-		Query q2 = (Query) session.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
-		q2.setParameter("userid", Long.parseLong(u.getID()+""));
-		q2.setParameter("zeitid", Long.parseLong(z.getID()+""));
+		Query q2 = (Query) session
+				.getNamedQuery(Variables.GETABGESTIMMT_BYIDEVENT);
+		q2.setParameter("userid", Long.parseLong(u.getID() + ""));
+		q2.setParameter("zeitid", Long.parseLong(z.getID() + ""));
 		List<Abgestimmt> res = q2.list();
-		
-		if(res.size()!=0){
+
+		if (res.size() != 0) {
 			Abgestimmt a = res.get(0);
 			a.setWertung(value);
 			session.update(a);
-		}
-		else{
-			Abgestimmt a = new Abgestimmt(u,z,value);
+		} else {
+			Abgestimmt a = new Abgestimmt(u, z, value);
 			session.save(a);
 		}
-		
-		
+
 		t.commit();
 		session.close();
-		
-		
-      
-		
-//		Abgestimmt a = (Abgestimmt) o;
-//		
-//		Boolean wertung = QueryHelper.getWertung(a.getUser().getID().longValue()+ "", a.getZeit().getID().longValue() + "");
-//		if (wertung == null) {
-//			Session session = InitSession.getSession().openSession();
-//			Transaction t = session.beginTransaction();
-//			t.begin();
-//			session.save(o);
-//			t.commit();
-//			session.close();
-//		} else {
-//			System.out.println("gibts schon in der Db");
-//		}
 
 	}
 
 	public static boolean saveObject(Object o) {
 		boolean b = true;
-			Session session = InitSession.getSession().openSession();
-			Transaction t = session.beginTransaction();
-			t.begin();
-			session.save(o);
-			t.commit();
-			session.close();
-
-		return b;
-	}
-	
-	
-	public static void notificate(DoodleEvent e, String text) {
-		
 		Session session = InitSession.getSession().openSession();
 		Transaction t = session.beginTransaction();
 		t.begin();
-		Query q2 = (Query) session.getNamedQuery(Variables.GETEINGELADEN_BYEVENTID);
-		q2.setParameter("id", Long.parseLong(e.getID()+""));
+		session.save(o);
+		t.commit();
+		session.close();
+
+		return b;
+	}
+
+	public static void notificate(DoodleEvent e, String text) {
+
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+		Query q2 = (Query) session
+				.getNamedQuery(Variables.GETEINGELADEN_BYEVENTID);
+		q2.setParameter("id", Long.parseLong(e.getID() + ""));
 		List<Eingeladen> res = q2.list();
 		t.commit();
 		session.close();
-		
-		for(Eingeladen ein : res){
+
+		for (Eingeladen ein : res) {
 			User u = ein.getUser();
-			DoodleNotification dn = new DoodleNotification(u,text);
+			DoodleNotification dn = new DoodleNotification(u, text);
 			QueryHelper.saveObject(dn);
 		}
-	
+
 	}
-	
+
 	public static Boolean usershavevoted(DoodleEvent e) {
-		List <Zeit> times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,
+		List<Zeit> times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,
 				e.getID() + "");
-		List <Eingeladen> usersinvited = QueryHelper.executeId(
+		List<Eingeladen> usersinvited = QueryHelper.executeId(
 				Variables.GETEINGELADEN_BYEVENTID, e.getID() + "");
-		
+
 		Zeit z = times.get(0);
-		List<Abgestimmt> a = QueryHelper.executeId(Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
-		
+
+		List<Abgestimmt> a = QueryHelper.executeId(
+				Variables.GETABGESTIMMT_BYEVENTID, z.getID().longValue() + "");
+
 		if (a == null)
 			return null;
 		else if (a.size() == usersinvited.size())
@@ -198,7 +186,43 @@ public class QueryHelper {
 		else
 			return false;
 	}
+
+	public static void deleteAbgestimmt(String eventid) {
+		Session session = null;
+		Transaction t = null;
+
+		try {
+			List<Zeit> zeiten = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID, eventid);
+			for (Zeit z : zeiten) {
+				session = InitSession.getSession().openSession();
+				t = session.beginTransaction();
+				t.begin();
+				Query q2 = (Query) session
+						.getNamedQuery(Variables.GETABGESTIMMT_BYEVENTID);
+				q2.setParameter("id", Long.parseLong(z.getID() + ""));
+				List<Abgestimmt> res = q2.list();
+				if (res.size() != 0) {
+					session.delete(res.get(0));
+				}
+			}
+		} catch (Exception e) {
+			// TODO
+		} finally {
+			t.commit();
+			session.close();
+		}
+	}
 	
-	
-	
+	//TODO thread macht...
+	public static void updateNotification(String userid){
+		List <DoodleNotification> m_notifications =  QueryHelper.executeId(Variables.GETNOTIFICATION_BYUSERID,userid);
+		
+		for (DoodleNotification dn : m_notifications ){
+			if(!dn.isGeliefert()){
+				Notification.show(dn.getText(),Notification.Type.TRAY_NOTIFICATION);
+				dn.setGeliefert(true);
+				QueryHelper.update(dn);
+			}
+		}
+	}
 }

@@ -49,6 +49,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -62,9 +63,6 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @version 2014-05-26 Hannah erstellt
  * @author Hannah Siegel
- * 
- *         TODO JUnit TODO Design pefekto TODO GUI Test //TODO Minus Button TODO
- *         nav, master obj??
  * 
  * 
  * */
@@ -282,8 +280,8 @@ public class EditEvent extends VerticalLayout implements View {
 	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
-
-		layout.addComponent(new Label("EDITING EVENT: " + m_event.getName()));
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
+		new Header(this,"Edit Event: "+m_event.getName(), m_username, m_userid, navigator);
 
 		textfields();
 

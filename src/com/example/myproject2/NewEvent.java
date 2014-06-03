@@ -49,6 +49,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
@@ -102,6 +103,8 @@ public class NewEvent extends VerticalLayout implements View {
 	void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
+		new Header(this,"New Event", m_username, m_userid, navigator);
 
 		// Eventname
 		textfield_eventname = new TextField();

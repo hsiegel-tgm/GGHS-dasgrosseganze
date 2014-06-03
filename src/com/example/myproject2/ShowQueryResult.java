@@ -7,11 +7,15 @@ import model.User;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 
 
 public class ShowQueryResult extends VerticalLayout implements View {
@@ -27,7 +31,7 @@ public class ShowQueryResult extends VerticalLayout implements View {
 	}
 
 	public void initializingTables() {
-		m_tableUsers = new Table("All Users");
+		m_tableUsers = new Table();
 		m_tableUsers.setSelectable(false);
 		m_tableUsers.setMultiSelect(false);
 		m_tableUsers.setImmediate(true);
@@ -41,7 +45,10 @@ public class ShowQueryResult extends VerticalLayout implements View {
 	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
-		search();
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
+		
+		new Header(this,"Query Result", m_username, m_userid, navigator);
+		
 		initializingTables();
 		
 		int i = 0;
@@ -50,24 +57,38 @@ public class ShowQueryResult extends VerticalLayout implements View {
 			i++;
 		}
 
-		layout.addComponent(m_tableUsers);
-
-		addingButtons();
-	}
-
-	public void addingButtons() {
-
-		// LogOut Button
-		Button button_LogOut = new Button("Log Out");
-		button_LogOut.addClickListener(new PinkShoes(navigator, Variables.LOGIN));
+		GridLayout gl = new GridLayout(3,3);
+		gl.setWidth("100%");
+		gl.setMargin(true);
+		gl.setSpacing(true);
+		gl.setColumnExpandRatio(0, 0.1f);
+		gl.setColumnExpandRatio(1, 0.2f);
+		gl.setColumnExpandRatio(2, 0.7f);
 		
-		// LogOut Button
+		gl.setRowExpandRatio(0, 0.1f);
+		gl.setRowExpandRatio(1, 0.8f);
+		gl.setRowExpandRatio(2 , 0.1f);
+
+		gl.addComponent(new Label(""));
+		Label caption1 = new Label("Query Result");
+		caption1.addStyleName(Reindeer.LABEL_H2);
+		gl.addComponent(caption1);
+		gl.addComponent(new Label(""));
+		
+		gl.addComponent(new Label(""));
+		gl.addComponent(m_tableUsers);
+		gl.addComponent(new Label(""));
+		
+		gl.addComponent(new Label("<span style=\"color: white;\">.</span>",ContentMode.HTML));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		
+		layout.addComponent(gl);
+		
+
 		Button button_back = new Button("Back");
 		button_back.addClickListener(new PinkShoes(navigator, Variables.STARTPAGE,m_username,m_userid));
-
-		// adding buttons
-		this.addComponent(button_back);
-		this.addComponent(button_LogOut);
+		this.addComponent(button_back);	
 	}
 
 	public void executeQuerys() {
@@ -79,26 +100,6 @@ public class ShowQueryResult extends VerticalLayout implements View {
 		}
 	}
 	
-	public void search(){
-		Button button_search = new Button("Search");
-		m_usersearch = new TextField();
-
-		button_search.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				String text = m_usersearch.getValue();
-				if(!text.equals("")){
-					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,text).navigation();
-				}
-				else{
-					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,"_").navigation();
-				}
-			}
-		});
-		
-		this.addComponent(m_usersearch);
-		this.addComponent(button_search);
-	}
-
 	@Override
 	public void enter(ViewChangeEvent event) {
 		this.removeAllComponents();

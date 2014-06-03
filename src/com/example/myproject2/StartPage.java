@@ -22,9 +22,12 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -35,6 +38,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.data.Property.ValueChangeEvent;
 
 /**
@@ -56,16 +60,18 @@ public class StartPage extends VerticalLayout implements View {
 	private FatNavigator navigator;
 	private String m_username, m_userid;
 	private Table m_myevents, m_invitedEvents2;
-	private List<DoodleEvent> m_events; // ueberfluessig? haha admin?
+	private List<DoodleEvent> m_events; // ueberfluessig? haha admin? TODO
 	private List<DoodleEvent> m_invitedTo;
-private TextField m_usersearch;
-	StartPage(FatNavigator nav, Master m) {
-		this.navigator = nav;
+	private GridLayout gl;
+	private TextField m_usersearch;
+	
+	public StartPage(FatNavigator nav, Master m) {
+			this.navigator = nav;
 	}
 
 	public void initializingTables() {
 		// myevents
-		m_myevents = new Table("Your Events");
+		m_myevents = new Table();
 		m_myevents.setSelectable(true);
 		m_myevents.setMultiSelect(false);
 		m_myevents.setImmediate(true);
@@ -76,7 +82,7 @@ private TextField m_usersearch;
 		m_myevents.addContainerProperty("Location", String.class, null);
 
 		// invited events
-		m_invitedEvents2 = new Table("All Events");
+		m_invitedEvents2 = new Table();
 		m_invitedEvents2.setSelectable(true);
 		m_invitedEvents2.setMultiSelect(false);
 		m_invitedEvents2.setImmediate(true);
@@ -86,15 +92,16 @@ private TextField m_usersearch;
 		m_invitedEvents2.addContainerProperty("Event Name", String.class, null);
 		m_invitedEvents2.addContainerProperty("Location", String.class, null);
 		m_invitedEvents2.addContainerProperty("Admin", String.class, null);
-
 	}
 
 	public void init() {
 		final VerticalLayout layout = this;
 		layout.setMargin(true);
-		layout.addComponent(new Label("Welcome: " + m_username));
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
+		
+		new Header(this,"Welcome " + m_username+"!", m_username, m_userid, navigator);
 
-		initializingTables();
+		initializingTables();	
 
 		int isadminzv = 0;
 		int isinvited = 0;
@@ -118,9 +125,41 @@ private TextField m_usersearch;
 			isinvited++;
 			list2.add(ev.getID());
 		}
+		
+		GridLayout gl = new GridLayout(5,3);
+		gl.setWidth("100%");
+		gl.setMargin(true);
+		gl.setSpacing(true);
+		gl.setColumnExpandRatio(0, 0.1f);
+		gl.setColumnExpandRatio(1, 0.20f);
+		gl.setColumnExpandRatio(2, 0.01f);
+		gl.setColumnExpandRatio(3, 0.20f);
+		gl.setColumnExpandRatio(4, 0.5f);
+		gl.setRowExpandRatio(0, 0.1f);
+		gl.setRowExpandRatio(1, 0.8f);
+		gl.setRowExpandRatio(2 , 0.1f);
 
-		layout.addComponent(m_myevents);
-		layout.addComponent(m_invitedEvents2);
+		gl.addComponent(new Label(""));
+		Label caption1 = new Label("Your Events");
+		caption1.addStyleName(Reindeer.LABEL_H2);
+		gl.addComponent(caption1);
+		gl.addComponent(new Label(""));
+		Label caption2 = new Label("Invited Events");
+		caption2.addStyleName(Reindeer.LABEL_H2);
+		gl.addComponent(caption2);
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		gl.addComponent(m_myevents);
+		gl.addComponent(new Label(""));
+		gl.addComponent(m_invitedEvents2);
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label("<span style=\"color: white;\">.</span>",ContentMode.HTML));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+
+		layout.addComponent(gl);
 
 		m_myevents.addValueChangeListener(new Property.ValueChangeListener() {
 			public void valueChange(ValueChangeEvent event) {
@@ -152,43 +191,69 @@ private TextField m_usersearch;
 		Button button_ShowNotification = new Button("Show old Notifications");
 		button_ShowNotification.addClickListener(new PinkShoes(navigator,
 				Variables.SHOWNOTIFICATIONS, m_username, m_userid));
-
-		// adding buttons
-		this.addComponent(button_NewEvent);
-		this.addComponent(button_ShowNotification);
-
-		// LogOut Button
-		Button button_LogOut = new Button("Log Out");
-		button_LogOut
-				.addClickListener(new PinkShoes(navigator, Variables.LOGIN));
-
-		// adding buttons
-		this.addComponent(button_LogOut);
 		
-		search();
+		GridLayout gl2 = new GridLayout(3,1);
+		gl2.setWidth("30%");
+		gl2.setMargin(false);
+		gl2.setSpacing(true);
+		gl2.setColumnExpandRatio(0, 0.4f);
+		gl2.setColumnExpandRatio(1, 0.2f);
+		gl2.setColumnExpandRatio(2, 0.4f);
+		
+		gl2.addComponent(button_NewEvent);
+		gl2.addComponent(button_ShowNotification);
+		
+		this.addComponent(gl2);
+		
 	}
 	
-	public void search(){
-		Button button_search = new Button("Search");
-		m_usersearch = new TextField();
-
-		button_search.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				System.out.println("clickked");
-				String text = m_usersearch.getValue();
-				System.out.println("text:"+text);
-				if(!text.equals("")){
-					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,text).navigation();
-				}
-				else{
-					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,"_").navigation();
-				}
-			}
-		});
-		
-		this.addComponent(m_usersearch);
-		this.addComponent(button_search);
-	}
+//	public void searchAndLogOut(){
+//		
+//		Button button_search = new Button("search");
+//		m_usersearch = new TextField();
+//		
+//		button_search.addClickListener(new Button.ClickListener() {
+//			public void buttonClick(ClickEvent event) {
+//				String text = m_usersearch.getValue();
+//				if(!text.equals("")){
+//					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,text).navigation();
+//				}
+//				else{
+//					new PinkShoes(navigator,Variables.SHOWQUERYRESULT,m_username,m_userid,"_").navigation();
+//				}
+//			}
+//		});
+//		
+//		GridLayout gl3 = new GridLayout(3,1);
+//		gl3.setWidth("100%");
+//		gl3.setMargin(false);
+//		gl3.setSpacing(true);
+//		gl3.setColumnExpandRatio(0, 0.5f);
+//		gl3.setColumnExpandRatio(1, 0.3f);
+//		gl3.setColumnExpandRatio(3, 0.2f);
+//	
+//		Label welcome = new Label ("Welcome " + m_username+"!");
+//		welcome.addStyleName(Reindeer.LABEL_H1);
+//		
+//		gl3.addComponent(welcome);
+//		
+//		GridLayout gl4 = new GridLayout(2,1);
+//
+//		gl4.addComponent(m_usersearch);
+//		gl4.addComponent(button_search);
+//
+//		gl3.addComponent(gl4);
+//		
+//		// LogOut Button
+//		Button button_LogOut = new Button("Log Out");
+//		button_LogOut.addClickListener(new PinkShoes(navigator, Variables.LOGIN));
+//		button_LogOut.addStyleName(Reindeer.BUTTON_LINK);
+//
+//		// adding buttons
+//		gl3.addComponent(button_LogOut);
+//
+//		this.addComponent(gl3);
+//	}
 
 	public void executeQuerys() {
 		m_events = QueryHelper.executeId(Variables.GETEVENT_BYADMIN, m_userid);
@@ -199,7 +264,7 @@ private TextField m_usersearch;
 	
 		for (DoodleNotification dn : m_notifications ){
 			if(!dn.isGeliefert()){
-				Notification.show(dn.getText(),Notification.TYPE_WARNING_MESSAGE);
+				Notification.show(dn.getText(),Notification.Type.TRAY_NOTIFICATION);
 				dn.setGeliefert(true);
 				QueryHelper.update(dn);
 			}

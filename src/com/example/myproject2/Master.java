@@ -24,7 +24,7 @@ import com.vaadin.ui.UI;
 
 
 @SuppressWarnings("serial")
-@Theme("myproject2")
+@Theme("doodleevent")
 @SessionScoped
 public class Master extends UI {
 	private FatNavigator navigator;
@@ -47,7 +47,7 @@ public class Master extends UI {
 		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
 		navigator.addView(Variables.EDITEVENT,new EditEvent(navigator));
-		navigator.addView(Variables.VOTE,new Elternsprechtag(navigator,this)); //TODO
+		navigator.addView(Variables.VOTE,new EventAnzeigen(navigator,this)); //TODO
 		navigator.addView(Variables.COMMENT,new NewComment(navigator));
 		navigator.addView(Variables.SHOWQUERYRESULT,new ShowQueryResult(navigator));
 		navigator.addView(Variables.SHOWNOTIFICATIONS,new ShowNotification(navigator));

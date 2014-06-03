@@ -24,14 +24,17 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -62,22 +65,10 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		this.m_navigator = nav;
 	}
 
-	void init() {
-		final VerticalLayout layout = this;
-		layout.setMargin(true);
-
-		layout.addComponent(new Label("Event: " + m_event.getName()));
-		layout.addComponent(new Label("Ort: " + m_event.getOrt()));
-
-		if(m_event.getFixDatum()!=null){
-			layout.addComponent(new Label("Am: " + m_event.getFixDatum()));
-		}
-		
-		// TABELLE
+	public void addingtable(){
 		final Table table = new Table("");
 		table.setSelectable(false);
 		table.setColumnReorderingAllowed(true);
-		//table.setColumnCollapsingAllowed(true);
 
 		table.addContainerProperty("User", String.class, null);
 		
@@ -106,8 +97,6 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					o2[looper]=cbx;
 					looper++;
 				}
-				//table.addItem(o,inc);
-				//loop durch zeiten
 			}
 			else{
 				User u = e.getUser();
@@ -130,72 +119,71 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		}
 		table.addItem(o2,inc);
 
-		layout.addComponent(table);
+		GridLayout gl = new GridLayout(3,3);
+		gl.setWidth("100%");
+		gl.setMargin(true);
+		gl.setSpacing(true);
+		gl.setColumnExpandRatio(0, 0.1f);
+		gl.setColumnExpandRatio(1, 0.2f);
+		gl.setColumnExpandRatio(2, 0.7f);
+		
+		gl.setRowExpandRatio(0, 0.1f);
+		gl.setRowExpandRatio(1, 0.8f);
+		gl.setRowExpandRatio(2 , 0.1f);
 
-		layout.addComponent(new Label("KOMMENTARE:"));
-		for(Kommentar k : m_comments){
-			layout.addComponent(new Label("von: "+k.getUser().getUsername() + "   gepostet: "+k.getGepostet()));
-			layout.addComponent(new Label("           "+k.getText()));
-			Button button_deleteComment = new Button ("-");
-			layout.addComponent(button_deleteComment);
-			kommentar = k;
-			button_deleteComment.addClickListener(new Button.ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					QueryHelper.delete(kommentar);					
-				}});
-		}
-		Button button_newcomment = new Button("New Comment");
-		layout.addComponent(button_newcomment);
+		gl.addComponent(new Label(""));
+		Label caption1 = new Label("Invited Users");
+		caption1.addStyleName(Reindeer.LABEL_H2);
+		gl.addComponent(caption1);
+		gl.addComponent(new Label(""));
+		
+		gl.addComponent(new Label(""));
+		gl.addComponent(table);
+		gl.addComponent(new Label(""));
+		
+		gl.addComponent(new Label("<span style=\"color: white;\">.</span>",ContentMode.HTML));
+		gl.addComponent(new Label(""));
+		gl.addComponent(new Label(""));
+		
+		this.addComponent(gl);
+	}
+	
+	public void addingcomments(){
+		//TODO
+//		layout.addComponent(new Label("KOMMENTARE:"));
+//		for(Kommentar k : m_comments){
+//			layout.addComponent(new Label("von: "+k.getUser().getUsername() + "   gepostet: "+k.getGepostet()));
+//			layout.addComponent(new Label("           "+k.getText()));
+//			Button button_deleteComment = new Button ("-");
+//			layout.addComponent(button_deleteComment);
+//			kommentar = k;
+//			button_deleteComment.addClickListener(new Button.ClickListener() {
+//				@Override
+//				public void buttonClick(ClickEvent event) {
+//					QueryHelper.delete(kommentar);	//TODO				
+//				}});
+//		}
+		
+	}
+	public void init() {
+		final VerticalLayout layout = this;
+		layout.setMargin(true);
+		layout.addStyleName(Reindeer.LAYOUT_WHITE);
 
-		//newcomment
-		if(m_isadmin){
-			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","admin"));
-		}
-		else{
-			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","invited"));
+		new Header(this,"This is "+m_event.getName(), m_username, m_userid, m_navigator);
+
+		layout.addComponent(new Label("Ort: " + m_event.getOrt()));
+
+		if(m_event.getFixDatum()!=null){
+			layout.addComponent(new Label("Am: " + m_event.getFixDatum()));
 		}
 		
-		if (m_isadmin) {
-			// D Button
-			Button button_delete = new Button("Delete This Event");
-			Button button_edit = new Button("Edit This Event");
+		addingtable();
+		
+		addingcomments(); //TODO
+	
+		addingButtons();
 
-			layout.addComponent(button_edit);
-
-			button_delete.addClickListener(new Button.ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got cancelled");
-
-					Session session = InitSession.getSession().openSession();
-					Transaction t = session.beginTransaction();
-					t.begin();
-
-					for (Eingeladen ein : m_eingeladene) {
-						session.delete(ein);
-					}
-					
-					for (Zeit z : m_times) {
-						session.delete(z);
-					}
-					//todo: abgestimmt loeschen??
-					//session.delete(m_event);// TODO!!
-
-					t.commit();
-					session.close();
-
-
-					
-					m_navigator.navigateTo(Variables.STARTPAGE + "/" + m_username
-							+ "/" + m_userid);
-				}
-			});
-			
-			button_edit.addClickListener(new PinkShoes(m_navigator, Variables.EDITEVENT, m_username, m_userid, m_event.getID().longValue()+""));
-			
-		}
-		addingButtons(layout);
 	}
 	
 	public void executeQuerys(){
@@ -209,17 +197,35 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		m_eingeladene = QueryHelper.executeId("getEingeladenforSpecificEvent",  m_eventque);		
 	}
 	
-	public void addingButtons(VerticalLayout layout) {
-
-		// LogOut Button
-		Button button_LogOut = new Button("Log Out");
-		button_LogOut.addClickListener(new PinkShoes(m_navigator, Variables.LOGIN));
-
+	public void addingButtons() {
+		//TODO ordnen
+		Button button_newcomment = new Button("New Comment");
+	
+		//newcomment
+		if(m_isadmin){
+			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","admin"));
+		}
+		else{
+			button_newcomment.addClickListener(new PinkShoes(m_navigator, Variables.COMMENT,m_username,m_userid,m_event.getID().longValue()+"","invited"));
+		}
+		
 		// back Button
 		Button button_back = new Button("Back");
 		button_back.addClickListener(new PinkShoes(m_navigator,
-			Variables.STARTPAGE, m_username, m_userid));
-		// LogOut Button
+					Variables.STARTPAGE, m_username, m_userid));		
+		
+			// D Button
+		Button button_delete = new Button("Delete This Event");
+		Button button_edit = new Button("Edit This Event");
+
+			
+		button_delete.addClickListener(new Button.ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					delete();
+				}
+			});
+		
 		Button button_save = new Button("Save");
 		button_save.addClickListener(new Button.ClickListener() {
 			@Override
@@ -228,11 +234,46 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			}
 		});
 		
-		// adding buttons
-		if(!m_isadmin)
-			layout.addComponent(button_save);
-		layout.addComponent(button_back);
-		layout.addComponent(button_LogOut);
+		button_edit.addClickListener(new PinkShoes(m_navigator, Variables.EDITEVENT, m_username, m_userid, m_event.getID().longValue()+""));
+			
+		GridLayout gl;
+		if (m_isadmin) {
+			gl = new GridLayout(8,1);
+			gl.setWidth("100%");
+			gl.setMargin(true);
+			gl.setSpacing(true);
+			gl.setColumnExpandRatio(0, 0.05f);//b
+			gl.setColumnExpandRatio(1, 0.05f);
+			gl.setColumnExpandRatio(2, 0.05f);//b
+			gl.setColumnExpandRatio(3, 0.05f);	
+			gl.setColumnExpandRatio(4, 0.05f);//b	
+			gl.setColumnExpandRatio(5, 0.05f);	
+			gl.setColumnExpandRatio(6, 0.05f);//b	
+			gl.setColumnExpandRatio(7, 0.65f);	
+			gl.addComponent(button_edit);
+			gl.addComponent(new Label(""));
+			gl.addComponent(button_delete);
+		}
+		else{
+			gl = new GridLayout(6,1);
+			gl.setWidth("100%");
+			gl.setMargin(true);
+			gl.setSpacing(true);
+			gl.setColumnExpandRatio(0, 0.05f);//b
+			gl.setColumnExpandRatio(1, 0.05f);
+			gl.setColumnExpandRatio(2, 0.05f);//b
+			gl.setColumnExpandRatio(3, 0.05f);	
+			gl.setColumnExpandRatio(4, 0.05f);//b	
+			gl.setColumnExpandRatio(5, 0.75f);	
+			gl.addComponent(button_save);
+		}
+		gl.addComponent(new Label(""));
+		gl.addComponent(button_newcomment);
+		gl.addComponent(new Label(""));
+		gl.addComponent(button_back);
+		gl.addComponent(new Label(""));
+		
+		this.addComponent(gl);
 	}
 	
 	public void save(){
@@ -248,6 +289,36 @@ public class EventAnzeigen extends VerticalLayout implements View {
 			}
 		}
 		Notification.show("saved yout choices... ");
+	}
+	public void delete(){
+		QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got cancelled");
+
+		Session session = InitSession.getSession().openSession();
+		Transaction t = session.beginTransaction();
+		t.begin();
+
+		for (Eingeladen ein : m_eingeladene) {
+			session.delete(ein);
+		}
+		
+		for (Zeit z : m_times) {
+			session.delete(z);
+			
+		}
+		
+		for (Kommentar k : m_comments) {
+			session.delete(k);
+		}
+		
+		QueryHelper.deleteAbgestimmt(m_event.getID()+"");
+		//todo: abgestimmt loeschen??
+		//session.delete(m_event);// TODO!!
+
+		t.commit();
+		session.close();
+		
+		m_navigator.navigateTo(Variables.STARTPAGE + "/" + m_username
+				+ "/" + m_userid);
 	}
 	
 	//IoC Prinzip
