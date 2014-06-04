@@ -148,10 +148,12 @@ public class NewUser extends VerticalLayout implements View {
 
 				if (valid) {
 					// new User object
-					//String pw = RandomStringUtils.randomAlphanumeric(25);
-					String pw = "123"; //TODO aendern irgendwann :P
+					String pw = "";
+					for(int i = 0 ; i<20;++i){
+						pw += (int)(Math.random()*10-1)+"";
+					}
 					try {
-						SendEmail.send("hannah.k.siegel@gmail.com","Your password", "Thank you for registering at TheBigWhole. Your password is "+pw+"(testing password. TODO)");
+						SendEmail.send(email,"Your password", "Thank you for registering at TheBigWhole. Your password is "+pw);
 					} catch (AddressException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

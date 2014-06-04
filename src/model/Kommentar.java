@@ -35,6 +35,7 @@ public class Kommentar {
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private User user;
 	
+	private boolean deleted;
 	
 	public DoodleEvent getEvent() {
 		return event;
@@ -87,8 +88,16 @@ public class Kommentar {
 		this.text = text;
 		this.gepostet = gepostet;
 		this.user = user;
+		this.deleted=false;
 	}
 
-
 	public Kommentar(){}
+	
+	public void setDeleted(){
+		this.deleted=true;
+	}
+	
+	public boolean getDeleted(){
+		return this.deleted;
+	}
 }

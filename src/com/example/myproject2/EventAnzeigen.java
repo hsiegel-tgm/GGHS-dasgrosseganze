@@ -79,6 +79,8 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		checkboxes = new Vector<CheckBox>();		
 		Object[] o2 = new Object[m_times.size()+1];
 
+		boolean table_empty = true;
+		
 		int inc = 1;
 		for (Eingeladen e : m_eingeladene) {
 			if(e.getUser().getUsername().equals(m_username)){
@@ -112,8 +114,10 @@ public class EventAnzeigen extends VerticalLayout implements View {
 					}
 					++i;
 				}
-				if(o[1]!=null)
+				if(o[1]!=null){
+					table_empty = false;
 					table.addItem(o,inc);
+				}
 			}
 			++inc;
 		}
@@ -132,13 +136,21 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		gl.setRowExpandRatio(2 , 0.1f);
 
 		gl.addComponent(new Label(""));
-		Label caption1 = new Label("Invited Users");
+		Label caption1 = new Label("Users that have already voted");
 		caption1.addStyleName(Reindeer.LABEL_H2);
 		gl.addComponent(caption1);
 		gl.addComponent(new Label(""));
 		
 		gl.addComponent(new Label(""));
-		gl.addComponent(table);
+		
+		if(m_isadmin && table_empty){
+			Label caption3 = new Label("Nobody has voted yet");
+			caption3.addStyleName(Reindeer.LABEL_SMALL);
+			gl.addComponent(caption3);
+		}else{
+			gl.addComponent(table);
+		}
+		
 		gl.addComponent(new Label(""));
 		
 		gl.addComponent(new Label("<span style=\"color: white;\">.</span>",ContentMode.HTML));
@@ -149,21 +161,33 @@ public class EventAnzeigen extends VerticalLayout implements View {
 	}
 	
 	public void addingcomments(){
-		//TODO
-//		layout.addComponent(new Label("KOMMENTARE:"));
-//		for(Kommentar k : m_comments){
-//			layout.addComponent(new Label("von: "+k.getUser().getUsername() + "   gepostet: "+k.getGepostet()));
-//			layout.addComponent(new Label("           "+k.getText()));
-//			Button button_deleteComment = new Button ("-");
-//			layout.addComponent(button_deleteComment);
-//			kommentar = k;
+		int anz = m_comments.size();
+		Label l = new Label("Kommentare");
+		l.addStyleName(Reindeer.LABEL_H2);
+		this.addComponent(l);
+		this.addComponent(new Label("&nbsp",ContentMode.HTML));
+
+		for(Kommentar k : m_comments){
+			if(!(k.getDeleted())){
+			this.addComponent(new Label("from: "+k.getUser().getUsername() + "&nbsp on: "+k.getGepostet(),ContentMode.HTML));
+			this.addComponent(new Label("&nbsp",ContentMode.HTML));
+			HorizontalLayout h = new HorizontalLayout();
+			h.addComponent(new Label("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+k.getText(),ContentMode.HTML));
+			h.addComponent(new Label("&nbsp",ContentMode.HTML));
+			Button button_deleteComment = new Button ("-");
+			button_deleteComment.addStyleName(Reindeer.BUTTON_SMALL);
+		//	h.addComponent(button_deleteComment); TODO
+			this.addComponent(h);
 //			button_deleteComment.addClickListener(new Button.ClickListener() {
 //				@Override
 //				public void buttonClick(ClickEvent event) {
-//					QueryHelper.delete(kommentar);	//TODO				
-//				}});
-//		}
-		
+//					kommentar.setDeleted();
+//					QueryHelper.update(kommentar);
+//			}});
+			this.addComponent(new Label("&nbsp",ContentMode.HTML));
+			this.addComponent(new Label("&nbsp",ContentMode.HTML));
+			}
+		}
 	}
 	public void init() {
 		final VerticalLayout layout = this;
@@ -180,7 +204,7 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		
 		addingtable();
 		
-		addingcomments(); //TODO
+		addingcomments();
 	
 		addingButtons();
 
@@ -291,31 +315,9 @@ public class EventAnzeigen extends VerticalLayout implements View {
 		Notification.show("saved yout choices... ");
 	}
 	public void delete(){
-		QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got cancelled");
-
-		Session session = InitSession.getSession().openSession();
-		Transaction t = session.beginTransaction();
-		t.begin();
-
-		for (Eingeladen ein : m_eingeladene) {
-			session.delete(ein);
-		}
+		m_event.setDeleted();
 		
-		for (Zeit z : m_times) {
-			session.delete(z);
-			
-		}
-		
-		for (Kommentar k : m_comments) {
-			session.delete(k);
-		}
-		
-		QueryHelper.deleteAbgestimmt(m_event.getID()+"");
-		//todo: abgestimmt loeschen??
-		//session.delete(m_event);// TODO!!
-
-		t.commit();
-		session.close();
+		QueryHelper.update(m_event);
 		
 		m_navigator.navigateTo(Variables.STARTPAGE + "/" + m_username
 				+ "/" + m_userid);

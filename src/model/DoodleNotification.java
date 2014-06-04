@@ -51,15 +51,15 @@ public class DoodleNotification {
 		this.text = text;
 		this.geliefert = false;
 		this.geschriebenAm=new Date();
-		try {
-			SendEmail.send(user.geteMail(), "New Notification", text);
-		} catch (AddressException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			// SendEmail.send(user.geteMail(), "New Notification", text); //TODO
+//		} catch (AddressException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (MessagingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	public User getUser() {

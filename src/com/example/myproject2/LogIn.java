@@ -117,7 +117,7 @@ public class Login extends VerticalLayout implements View {
 		try {
 			layout = new CustomLayout(layoutFile);
 		} catch (Exception e) {
-			System.out.println("there was a problem"); //TODO ex handling
+			System.out.println("there was a problem");
 		}
 		layout.addStyleName("sada");
 
@@ -136,50 +136,6 @@ public class Login extends VerticalLayout implements View {
 		layout.addComponent(textfield_password, "password");
 		layout.addComponent(okbutton,"okbutton");
 		layout.addComponent(neuerBenutzer,"neuerBenutzer");
-		
-		//QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got cancelled");
-
-		
-//		List<?> l = QueryHelper.executeId(Variables.GETEVENT_BYID, 6+"");
-//		
-//		DoodleEvent m_event = (DoodleEvent) l.get(0);
-//		
-//		List <Zeit> m_times = QueryHelper.executeId("getTimePossibilitesforSpecificEvent",  m_event.getID()+"");
-//		
-//		List <Kommentar> m_comments = QueryHelper.executeId(Variables.GETKOMMENTS,  m_event.getID()+"");
-//
-//		List <Eingeladen> m_eingeladene = QueryHelper.executeId("getEingeladenforSpecificEvent",  6+"");
-//		
-//		Session session = InitSession.getSession().openSession();
-//		Transaction t = session.beginTransaction();
-//		t.begin();
-//
-//		for (Eingeladen ein : m_eingeladene) {
-//			System.out.println("eingeladene:"+ein.getUser().getUsername());
-//			session.delete(ein);
-//			session.flush();
-//		}
-//		System.out.println("2:");
-//
-//		for (Zeit z : m_times) {
-//			session.delete(z);
-//			session.flush();
-//
-//		}
-//		
-//		for (Kommentar k : m_comments) {
-//			session.delete(k);
-//			session.flush();
-//
-//		}
-//		
-//		//QueryHelper.deleteAbgestimmt(m_event.getID()+"");
-//		//session.delete(m_event);
-//		session.flush();
-//
-//		t.commit();
-//		session.close();
-		
 		
 		//adding layout to webpage
 		this.addComponent(layout);
@@ -227,6 +183,7 @@ public class Login extends VerticalLayout implements View {
 				}
 			}
 		});
+		
 		
 	}
 

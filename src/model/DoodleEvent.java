@@ -44,6 +44,8 @@ public class DoodleEvent {
 	
 	private Date fixDatum;
 	
+	private boolean deleted;
+
 	//@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="event")
 	//private Collection<Zeit> zeiten = new Vector <Zeit>(); 
 	
@@ -55,6 +57,7 @@ public class DoodleEvent {
 		this.name = name;
 		this.ort = ort;
 		this.user = admin;
+		this.deleted = false;
 	}
 	
 	public void addKommentar(Kommentar k){
@@ -105,5 +108,11 @@ public class DoodleEvent {
 	
 	public DoodleEvent(){}
 	
+	public void setDeleted(){
+		this.deleted=true;
+	}
+	public boolean getDeleted(){
+		return this.deleted;
+	}
 	
 }
