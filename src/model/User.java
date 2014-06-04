@@ -19,28 +19,12 @@ import org.hibernate.validator.constraints.Email;
 
 import com.example.myproject2.Variables;
 
-/*
- * 
- * 2014-05-07 Hannah erstellt
- * 
- * 
- * TODO JUnit
- * TODO Komment
- * TODO Design pefekto
- * TODO GUI Test
- * TODO Variablen
- * TODO Coding style
- *  
- * */
-//TODO named query get users must be ordered
-//Named Query 
+
 @NamedQueries({
 	@NamedQuery(name="getUsers",query="FROM User u order by u.ID"),
 	@NamedQuery(name=Variables.GETUSER_BYID,query="FROM User u WHERE  u.ID = :id"),
 	@NamedQuery(name=Variables.GETUSER_BYNAME,query="FROM User u WHERE  u.username like :id"),
 })
-
-
 @Entity
 public class User {
 	@Id 

@@ -1,47 +1,17 @@
 package com.example.myproject2;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import org.hibernate.Query;
-
-import javax.persistence.EntityManager;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.AnnotationConfiguration;
-
-import java.util.Collection;
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import model.Abgestimmt;
 import model.DoodleEvent;
 import model.Eingeladen;
 import model.User;
 import model.Zeit;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.View;
@@ -50,7 +20,6 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -59,55 +28,106 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
+ * The class EditEvent is the View Component of the Edit Event Page
+ * 
+ * @author Hannah Siegel & Laurenz Gebauer
  * 
  * @version 2014-05-26 Hannah erstellt
- * @author Hannah Siegel
- * 
- * 
+ *
  * */
 public class EditEvent extends VerticalLayout implements View {
 	private static final long serialVersionUID = 1L;
 
-	private Vector<User> usr = new Vector<User>();
-	private List<User> m_allusers;
-	private List<Abgestimmt> m_usersabgestimmt;
-
-	private Button m_save, m_plus, m_minus;
-
+	//DateLayout
 	private VerticalLayout m_dateLayout;
-
 	
+	//parameters
 	private String m_username, m_userid, m_eventid;
 
 	// Textfields
 	private TextField textfield_eventname, textfield_eventort;
 
-	//private PopupDateField m_fix;
+	//fix DateField
 	private ComboBox m_fix;
 
 	// Datefields
 	private Vector<PopupDateField> popupDateField_zeiten = new Vector<PopupDateField>();
 
-	// Friends
-	private TwinColSelect twinColSet_friends;
-
+	//Event
 	private DoodleEvent m_event;
 
+	//times
 	private List<Zeit> m_times;
+	
+	//invited users
 	private List<Eingeladen> m_usersinvited;
 
-	// Navigator and master object
-	private FatNavigator navigator;
+	// Navigator object
+	private FatNavigator m_navigator;
 
-	
+	/**
+	 * @param nav navigator object
+	 */
 	protected EditEvent(FatNavigator nav) {
-		this.navigator = nav;
+		this.m_navigator = nav;
 	}
 
+	/**
+	 *  The function init calls the other methods and puts everything into a neat GridLayout 
+	 */
+	public void init() {
+		this.setMargin(true);
+		this.addStyleName(Reindeer.LAYOUT_WHITE);
+		
+		//inluding Header
+		new Header(this,"Edit Event '" + m_event.getName()+"'", m_username, m_userid, m_navigator);
+
+		//GridLayout init
+		GridLayout gl = new GridLayout(1,7);
+		gl.setWidth("100%");
+		gl.setMargin(true);
+		gl.setSpacing(true);
+		gl.setRowExpandRatio(0, 0.2f); //text
+		gl.setRowExpandRatio(1, 0.1f); //space
+		gl.setRowExpandRatio(2, 0.2f); //users
+		gl.setRowExpandRatio(3, 0.1f); //space
+		gl.setRowExpandRatio(4, 0.2f); //times or fix
+		gl.setRowExpandRatio(5, 0.1f); //space
+		gl.setRowExpandRatio(6, 0.1f); //buttons
+		
+		textFields(gl); //text
+		gl.addComponent(new Label("&nbsp",ContentMode.HTML)); //space
+		userinvitedbasic(gl); //users
+		gl.addComponent(new Label("&nbsp",ContentMode.HTML)); //space
+		
+		//times or fix
+		Boolean b = QueryHelper.usershavevoted(m_event);
+		if (b != null && b.booleanValue()) {
+			datefix(gl);
+		}
+
+		if (b != null && !b.booleanValue()) {
+			timepossibilities(gl);
+		}
+
+		gl.addComponent(new Label("&nbsp",ContentMode.HTML)); //space
+		
+		buttons(gl); //buttons
+
+		//adding to Layout
+		this.addComponent(gl);
+	}
+	
+	/**
+	 * The method newZeit returns a new PopupDateField Object with initialized Parameters
+	 * 
+	 * @param d
+	 * @return
+	 */
 	public PopupDateField newZeit(Date d) {
 		PopupDateField p = new PopupDateField();
 		p.setValue(d);
@@ -119,6 +139,10 @@ public class EditEvent extends VerticalLayout implements View {
 		return p;
 	}
 	
+	/**
+	 * The method textFields adds the text Fields
+	 * @param gl
+	 */
 	public void textFields(GridLayout gl){
 		GridLayout gl2 = new GridLayout(1,3);
 		gl2.setWidth("60%");
@@ -141,16 +165,23 @@ public class EditEvent extends VerticalLayout implements View {
 		textfield_eventort.setRequiredError("Please set the Event Location");
 		textfield_eventort.setValue(m_event.getOrt());
 
+		//adding to Layout
 		gl2.addComponent(textfield_eventname);	
 		gl2.addComponent(new Label("&nbsp",ContentMode.HTML));
 		gl2.addComponent(textfield_eventort);
 		gl.addComponent(gl2);
 	}
 	
+	/**
+	 * The method buttons adds the buttons onto the framework
+	 * 
+	 * @param gl
+	 */
 	public void buttons(GridLayout gl){
 		Button button_save = new Button(Variables.SAVE);
 		Button button_back = new Button(Variables.BACK);
 	
+		//initializing Layout
 		GridLayout gl2 = new GridLayout(3,1);
 		gl2.setWidth("30%");
 		gl2.setMargin(true);
@@ -160,13 +191,14 @@ public class EditEvent extends VerticalLayout implements View {
 		gl2.setColumnExpandRatio(2, 0.4f);
 		gl2.addStyleName(Reindeer.LAYOUT_WHITE);
 
+		//adding Components
 		gl2.addComponent(button_back);	
 		gl2.addComponent(new Label("&nbsp",ContentMode.HTML));
 		gl2.addComponent(button_save);	
 		gl.addComponent(gl2);
 		
 		// Back Button Listener
-		button_back.addClickListener(new PinkShoes(navigator,Variables.STARTPAGE, m_username, m_userid));
+		button_back.addClickListener(new PinkShoes(m_navigator,Variables.STARTPAGE, m_username, m_userid));
 	
 		// Send Button Listener
 		button_save.addClickListener(new Button.ClickListener() {
@@ -176,13 +208,18 @@ public class EditEvent extends VerticalLayout implements View {
 		});
 	}
 	
-	public void zeiten(GridLayout gl){
+	/**
+	 * The method timepossibilities adds the time possibilities
+	 * 
+	 * @param gl
+	 */
+	public void timepossibilities(GridLayout gl){
 		GridLayout gl2 = new GridLayout(1,1);
 		m_dateLayout = new VerticalLayout();
 		Label l = new Label("Possible Time Dates:");		
 
-		Button button_plus = new Button("+"); //TODO
-		Button button_minus = new Button("-"); //TODO
+		Button button_plus = new Button("+");
+		Button button_minus = new Button("-");
 		HorizontalLayout hl = new HorizontalLayout();
 		hl.addComponent(button_plus);
 		hl.addComponent(button_minus);
@@ -211,6 +248,7 @@ public class EditEvent extends VerticalLayout implements View {
 			}
 		});
 		
+		//initializing Layout
 		gl2.setWidth("60%");
 		gl2.setMargin(true);
 		gl2.setSpacing(true);
@@ -219,80 +257,44 @@ public class EditEvent extends VerticalLayout implements View {
 		gl2.addComponent(m_dateLayout);
 		gl.addComponent(gl2);
 	}
-
-	public void init() {
-		final VerticalLayout layout = this;
-		layout.setMargin(true);
-		layout.addStyleName(Reindeer.LAYOUT_WHITE);
-		new Header(this,"Edit Event " + m_event.getName(), m_username, m_userid, navigator);
-
-		GridLayout gl = new GridLayout(1,7);
-		gl.setWidth("100%");
-		gl.setMargin(true);
-		gl.setSpacing(true);
-		gl.setRowExpandRatio(0, 0.2f); //text
-		gl.setRowExpandRatio(1, 0.1f); //space
-		gl.setRowExpandRatio(2, 0.2f); //users
-		gl.setRowExpandRatio(3, 0.1f); //space
-		gl.setRowExpandRatio(4, 0.2f); //times
-		gl.setRowExpandRatio(5, 0.1f); //space
-		gl.setRowExpandRatio(6, 0.1f); //buttons
-		
-		textFields(gl);
-		
-		gl.addComponent(new Label("&nbsp",ContentMode.HTML));
-		
-		userinvitedbasic(gl);
-		
-		gl.addComponent(new Label("&nbsp",ContentMode.HTML));
-
-		Boolean b = QueryHelper.usershavevoted(m_event);
-
-		if (b != null && b.booleanValue()) {
-			datefix(gl);
-		}
-
-		if (b != null && !b.booleanValue()) {
-			zeiten(gl);
-		}
-
-		gl.addComponent(new Label("&nbsp",ContentMode.HTML));
-		
-		buttons(gl);
-
-		this.addComponent(gl);
-		
-	}
 	
-
-
-
-
+	/**
+	 * Show invited Users
+	 * 
+	 * @param gl
+	 */
 	public void userinvitedbasic(GridLayout gl) {
-		Table m_tableUsers = new Table("Invited Users");
-		m_tableUsers.setSelectable(false);
-		m_tableUsers.setMultiSelect(false);
-		m_tableUsers.setImmediate(true);
-		m_tableUsers.setColumnReorderingAllowed(true);
-		m_tableUsers.setColumnCollapsingAllowed(true);
-		m_tableUsers.addContainerProperty("User ID", Long.class, null);
-		m_tableUsers.addContainerProperty("Username", String.class, null);
-		m_tableUsers.addContainerProperty("Email", String.class, null);
+		//initializing Table
+		Table tableUsers = new Table("Invited Users");
+		tableUsers.setSelectable(false);
+		tableUsers.setMultiSelect(false);
+		tableUsers.setImmediate(true);
+		tableUsers.setColumnReorderingAllowed(true);
+		tableUsers.setColumnCollapsingAllowed(true);
+		tableUsers.addContainerProperty("User ID", Long.class, null);
+		tableUsers.addContainerProperty("Username", String.class, null);
+		tableUsers.addContainerProperty("Email", String.class, null);
 
+		//filling with data
 		int i = 0;
 		for (Eingeladen e : m_usersinvited) {
 			User u = e.getUser();
-			m_tableUsers.addItem(
+			tableUsers.addItem(
 					new Object[] { u.getID(), u.getUsername(), u.geteMail() },
 					new Integer(i));
 			i++;
 		}
 
-		gl.addComponent(m_tableUsers);
+		//adding to Layout
+		gl.addComponent(tableUsers);
 	}
 
+	/**
+	 * The method datefix adds the ComboBox onto the layout
+	 * @param gl
+	 */
 	public void datefix(GridLayout gl) {
-        m_fix = new ComboBox("FIX DATUM");
+        m_fix = new ComboBox("Fix date:");
         m_fix.setInvalidAllowed(false);
         m_fix.setNullSelectionAllowed(false);
         for( Zeit z : m_times){
@@ -302,6 +304,9 @@ public class EditEvent extends VerticalLayout implements View {
 		gl.addComponent(m_fix);
 	}
 
+	/**
+	 *  the method save saves into the database
+	 */
 	public void save(){
 		// fetching values
 		String name = textfield_eventname.getValue();
@@ -320,115 +325,86 @@ public class EditEvent extends VerticalLayout implements View {
 				// checking if date lies in the past
 				Date d = popupDateField_zeiten.elementAt(i).getValue();
 				if (d.before(new Date())) {
-					Notification.show("Please set a Future Date - Date Input Field number:"+ (i + 1),Notification.TYPE_WARNING_MESSAGE);
+					Notification.show("Please set a Future Date - Date Input Field number:"+ (i + 1),Notification.Type.WARNING_MESSAGE);
 					valid = false;
 				}
 			}
-			
-			//TODO fix datum check wenn leer?
-			
-			// // Checking if there is at least one User invited
-			// if (vector_invitedUsers.size() == 0) {
-			// valid = false;
-			// layout.addComponent(new Label(
-			// "Please Invite at least one User"));
-			// }
-
 		} catch (InvalidValueException e) {
 			valid = false;
-			Notification.show(e.getMessage(),Notification.TYPE_WARNING_MESSAGE);
+			Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
 		}
 
-		DoodleEvent eve = m_event;
-
+		//saving fix date value
 		if (m_fix != null) {
 	        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		    Date d = null;
 			try {
 				d = simpleDateFormat.parse(m_fix.getValue()+"");
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				valid = false;
+				Notification.show("Not valid SimpleDateFormat",Notification.Type.WARNING_MESSAGE);
 			} 
-			eve.setFixDatum(d);
+			m_event.setFixDatum(d);
 			QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got a final date: "+d);
 		}
 
-		eve.setName(name);
-		eve.setOrt(ort);
-		QueryHelper.update(eve);
+		if(valid){
+			//updating event
+			m_event.setName(name);
+			m_event.setOrt(ort);
+			QueryHelper.update(m_event);
 		
-		//TODO nur wenn wirklich aenderung..
-		QueryHelper.notificate(eve, "Dear User, the event " +eve.getName()+" just got edited");
-
-		//TODO schirch arg nein alles schleeeecht
-		//if(usershavevoted() != null && !usershavevoted()){
-//			for(Zeit z : m_times){
-//				QueryHelper.delete(z);
-//			}
+			QueryHelper.notificate(m_event, "Dear User, the event " +m_event.getName()+" just got edited");
+		}
+//		TODO
+//		for(Zeit z : m_times){
+//			QueryHelper.delete(z);
+//		}
+			
+//		for (int i = 0; i < popupDateField_zeiten.size(); i++) {
+//			Date d = popupDateField_zeiten.elementAt(i).getValue();
+//			Zeit eventTime = new Zeit(d, d, m_event);
 //			
-//			for (int i = 0; i < popupDateField_zeiten.size(); i++) {
-//				Date d = popupDateField_zeiten.elementAt(i).getValue();
-//				Zeit eventTime = new Zeit(d, d, m_event); //TODO endzeit
-//			
-//				// saving the time
-//				QueryHelper.update(eventTime);
-//			}
-		//}
-
-		
-		
-		
-		// //Database connection
-		// Session session2 = InitSession.getSession().openSession();
-		// Transaction t2 = session2.beginTransaction();
-		// t2.begin();
-		//
-		// //Saving invited users into DB
-		// for (int j = 0; j < vector_invitedUsers.size(); ++j) {
-		// //fetching number of added User
-		// int nummer = ((Integer) (vector_invitedUsers.elementAt(j)));
-		//
-		// //saving into DB
-		// Eingeladen eingeladen = new Eingeladen(usr.elementAt(nummer),
-		// e);
-		// session2.save(eingeladen);
-		// }
-		//
-		// t2.commit();
-		// session2.close();
-
-		// Notification
-		Notification.show(("Event was saved..."));
-
+//			// saving the time
+//			QueryHelper.update(eventTime);
+//		}
+	
+		Notification.show(("Event was updated..."));
 	}
 	
+	/**
+	 * The method execute Query executes all Querys
+	 */
 	public void executeQuerys() {
-
 		List<?> l = QueryHelper.executeId(Variables.GETEVENT_BYID, m_eventid);
+		if(l!=null){
+			m_event = (DoodleEvent) l.get(0);
+		}
+		
+		//fetching times
+		m_times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,m_event.getID() + "");
 
-		m_event = (DoodleEvent) l.get(0);
-
-		m_times = QueryHelper.executeId(Variables.GETZEIT_BYEVENTID,
-				m_event.getID() + "");
-
-		m_allusers = QueryHelper.executeBasic(Variables.GETUSER);
-
-		m_usersinvited = QueryHelper.executeId(
-				Variables.GETEINGELADEN_BYEVENTID, m_event.getID() + "");
-
-		m_usersabgestimmt = QueryHelper.executeId(
-				Variables.GETABGESTIMMT_BYEVENTID, m_event.getID() + "");
-
+		//fetching invited users
+		m_usersinvited = QueryHelper.executeId(Variables.GETEINGELADEN_BYEVENTID, m_event.getID() + "");
 	}
 
+	//IoC
 	@Override
 	public void enter(ViewChangeEvent event) {
 		this.removeAllComponents();
-		m_username = event.getParameters().split("/")[0];
-		m_userid = event.getParameters().split("/")[1];
-		m_eventid = event.getParameters().split("/")[2];
+
+		//gettin Parameters
+		try{
+			m_username = event.getParameters().split("/")[0];
+			m_userid = event.getParameters().split("/")[1];
+			m_eventid = event.getParameters().split("/")[2];
+		}catch (Exception e){
+			new PinkShoes(m_navigator, Variables.LOGIN).navigation();
+		}
+		//executing Querys
 		executeQuerys();
+		
+		//initializing GUI Components
 		init();
 	}
 }

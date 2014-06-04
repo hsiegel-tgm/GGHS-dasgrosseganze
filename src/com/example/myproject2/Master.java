@@ -43,7 +43,7 @@ public class Master extends UI {
 		
 		//addin the Views
 		navigator.addView(Variables.LOGIN,new Login(navigator));
-		navigator.addView(Variables.REGISTER,new NewUser(navigator));
+		navigator.addView(Variables.REGISTER,new RegisterNewUser(navigator));
 		navigator.addView(Variables.STARTPAGE,new StartPage(navigator,this));
 		navigator.addView(Variables.NEWEVENT,new NewEvent(navigator,this));
 		navigator.addView(Variables.EDITEVENT,new EditEvent(navigator));

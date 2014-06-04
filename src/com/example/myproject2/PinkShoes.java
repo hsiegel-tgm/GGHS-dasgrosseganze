@@ -11,7 +11,7 @@ import com.vaadin.ui.Button.ClickEvent;
  * This class has no need for additional comments, it is simply perfect
  *
  */
-public class PinkShoes implements Button.ClickListener,Property.ValueChangeListener {
+public class PinkShoes implements Button.ClickListener {
 
 	private FatNavigator m_navigator;
 	private String m_direction , m_parameter;
@@ -30,12 +30,6 @@ public class PinkShoes implements Button.ClickListener,Property.ValueChangeListe
 		m_navigator.navigateTo(m_direction+m_parameter);
 	}
 
-	@Override
-	public void valueChange(ValueChangeEvent event) {
-		//TODO evtl
-
-		
-	}
 	public void navigation(){
 		m_navigator.navigateTo(m_direction+m_parameter);
 	}
