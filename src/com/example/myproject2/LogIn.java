@@ -158,8 +158,6 @@ public class Login extends VerticalLayout implements View {
 				//checking if username is known
 				boolean found_user = false;
 				for(User user : res){
-				//for (int i = 0; i < res.size(); ++i) {
-				//	User user = (User) res.get(i);
 					if((inputUsername.equals(user.getUsername()))){
 						found_user = true;
 
