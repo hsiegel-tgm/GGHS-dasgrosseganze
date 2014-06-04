@@ -26,6 +26,12 @@ import com.example.myproject2.Variables;
 	@NamedQuery(name=Variables.GETUSER_BYNAME,query="FROM User u WHERE  u.username like :id"),
 })
 @Entity
+/**
+ * @version 1
+ * @Author Hannah Siegel, Daniel Herczeg (Doku)
+ *
+ * Stellt einen User dar
+**/
 public class User {
 	@Id 
 	@GeneratedValue
@@ -42,38 +48,92 @@ public class User {
 	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL,mappedBy ="user")
 	private Collection<DoodleNotification> notifications = new Vector <DoodleNotification>();  
 	
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 *
+	 * Erstellt einen neuen Standard-User
+	**/
 	public User(){
 		this.username="User";
 		this.email="no@email.com";
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 *
+	 * Erstellt einen Benutzer mit den angegebenen Parametern
+	**/
 	public User(String username, String email,String password){
 			this.username=username;
 			this.email=email;
 			this.password=password;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @return Der Name des Users
+	 *
+	 * Gibt den Namen des Users zurueck
+	**/
 	public String getUsername(){
 		return this.username;
 	}
+
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @return Die eMail
+	 *
+	 * Gibt die Mail des Benutzers zurueck
+	**/
     public String geteMail(){
     	return this.email;
     }
     
+    /**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @return Ein String, der den User beschreibt
+	 *
+	 * Gibt einen String zurueck, der den User beschreibt
+	**/
 	public String toString(){
 		return "username:"+this.username+" - email:"+this.email;
 	}
 	
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @return Das Passwort
+	 *
+	 * Gibt das Passwort des Users zurueck
+	**/
 	public String getPassword() {
 		return password;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @param password    Das neue Passwort
+	 *
+	 * Setzt das Passwort des Users neu
+	**/
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 1
+	 * @return Die ID
+	 *
+	 * Gibt die ID des Users zurueck
+	**/
 	public Long getID(){
 		return this.ID;
 	}
-	
 }

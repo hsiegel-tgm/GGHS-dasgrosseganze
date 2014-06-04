@@ -25,6 +25,12 @@ import com.example.myproject2.Variables;
 })
 
 @Entity
+/**
+ * @author Hannah Siegel, Daniel Herczeg (Doku)
+ * @version 2014-06-04
+ * 
+ * Abgestimmt.java
+**/
 public class Abgestimmt {
 	
 	@Id
@@ -39,6 +45,15 @@ public class Abgestimmt {
 	
 	private boolean wertung;
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Erstellt eine neue Instanz der Klasse
+	 * @param user    Der Benutzer
+	 * @param zeit    Die Zeit, zu der abgestimmt wurde
+	 * @param wertung Die Auswahl, die der User ausgewaehlt hat.
+	**/
 	public Abgestimmt(User user, Zeit zeit, boolean wertung) {
 		super();
 		this.user = user;
@@ -46,34 +61,88 @@ public class Abgestimmt {
 		this.wertung = wertung;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Gibt den Benutzer zurueck
+	 * @return Den Wert, der fuer den Benutzer gespeichert wurde
+	**/
 	public User getUser() {
 		return user;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Setzt einen neuen Wert fuer den Benutzer
+	 * @param user    Der neue Wert fuer den Benutzer
+	**/
 	public void setUser(User user) {
 		this.user = user;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Gibt die Zeit zurueck
+	 * @return Den Wert, der fuer die Zeit gespeichert wurde
+	**/
 	public Zeit getZeit() {
 		return zeit;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Setzt einen neuen Wert fuer die Zeit
+	 * @param user    Der neue Wert fuer die Zeit
+	**/
 	public void setZeit(Zeit zeit) {
 		this.zeit = zeit;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Gibt die Wertung zurueck
+	 * @return Den Wert, der fuer die Wertung gespeichert wurde
+	**/
 	public boolean isWertung() {
 		return wertung;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Setzt einen neuen Wert fuer die Wertung
+	 * @param user    Der neue Wert fuer die Wertung
+	**/
 	public void setWertung(boolean wertung) {
 		this.wertung = wertung;
 	}
 
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Gibt die ID zurueck
+	 * @return Den Wert, der fuer die ID gespeichert wurde
+	**/
 	public Long getID() {
 		return ID;
 	}
 	
+	/**
+	 * @author Hannah Siegel
+	 * @version 2014-05-29
+	 *
+	 * Default-Konstruktor
+	**/	
 	public Abgestimmt(){}
-	
 }
